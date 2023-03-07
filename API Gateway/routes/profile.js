@@ -35,6 +35,7 @@ router.get("/", async (request, response) => {
         }).then((response) => response.json());
     } else if (request.query.userId) {
         // We will do user authentication to prevent client from making this request unless it is their own account
+
         foodRequest = `${foodURL}/?userId=${request.query.userId}`;
         foodResponse = await fetch(foodRequest, {
             method: "GET",
