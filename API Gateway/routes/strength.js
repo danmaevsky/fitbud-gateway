@@ -1,9 +1,9 @@
 require("dotenv").config();
 const express = require("express");
-const FITNESS_PORT = process.env.FITNESS_PORT;
+const FITNESS_URL = process.env.FITNESS_URL;
 
 const router = express.Router();
-const fitnessURL = `http://localhost:${FITNESS_PORT}/exercise/strength`;
+const fitnessURL = `${FITNESS_URL}/exercise/strength`;
 let fitnessRequest;
 let fitnessResponse;
 
