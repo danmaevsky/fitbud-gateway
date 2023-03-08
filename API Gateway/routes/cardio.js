@@ -3,7 +3,7 @@ const express = require("express");
 const FITNESS_PORT = process.env.FITNESS_PORT;
 
 const router = express.Router();
-const fitnessURL = `http://localhost:${FITNESS_PORT}/exercise`;
+const fitnessURL = `http://localhost:${FITNESS_PORT}/exercise/cardio`;
 let fitnessRequest;
 let fitnessResponse;
 
