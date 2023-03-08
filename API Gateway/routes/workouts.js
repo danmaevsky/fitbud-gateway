@@ -1,10 +1,10 @@
 require("../util")
 require("dotenv").config();
 const express = require("express");
-const FITNESS_PORT = process.env.FITNESS_PORT;
+const FITNESS_URL = process.env.FITNESS_URL;
 
 const router = express.Router();
-const fitnessURL = `http://localhost:${FITNESS_PORT}/workouts`;
+const fitnessURL = `${FITNESS_URL}/workouts`;
 let fitnessRequest;
 let fitnessResponse;
 
@@ -39,31 +39,32 @@ router.get("/:workoutId", async (request, response) => {
 router.post("/", async (request, response) => {
 
 	// Authenticate this please 🥺	
-
 	fitnessRequest = fitnessURL
 	fitnessResponse = await fetch(fitnessRequest, {
 		method: "POST",
-		body: request.body
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify(request.body)
 	}).then((response => response.json()))
 
 	response.send(fitnessResponse)
 })
 
 /* Patch a workout from a User */
-router.post("/", async (request, response) => {
+router.patch("/", async (request, response) => {
 
 	// Authenticate this please 🥺
 
 	fitnessRequest = fitnessURL
 	fitnessResponse = await fetch(fitnessRequest, {
 		method: "PATCH",
-		body: request.body
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify(request.body)
 	}).then((response => response.json()))
 
 	response.send(fitnessResponse)
 })
 
-/* Patch a workout from a User */
+/* Delete a workout from a User */
 router.delete("/:workoutId", async (request, response) => {
 
 	// Authenticate this please 🥺
