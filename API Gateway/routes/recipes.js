@@ -3,46 +3,43 @@ require("../util");
 
 require("dotenv").config();
 const express = require("express");
-const FITNESS_PORT = process.env.FITNESS_PORT;
-const ACCOUNT_PORT = process.env.ACCOUNT_PORT;
+const FITNESS_URL = process.env.FITNESS_URL;
+const ACCOUNT_URL = process.env.ACCOUNT_URL;
 
 const router = express.Router();
-const recipesURL = `http://localhost:${FITNESS_PORT}/recipes`;
-const authURL = `http://localhost:${ACCOUNT_PORT}/auth`;
-let foodRequest;
-let foodResponse;
+const recipesURL = `${FITNESS_URL}/recipes`;
+const authURL = `${ACCOUNT_URL}/auth`;
+let recipesRequest;
+let recipesResponse;
 
 /* Get Recipe by ID */
 router.get("/:recipeId", async (request, response) => {
-	if (request.params.foodId) {
-		recipesRequest = `${recipesURL}/${request.params.foodId}`;
+	if (request.params.recipeId) {
+		recipesRequest = `${recipesURL}/${request.params.recipeId}`;
 		recipesResponse = await fetch(recipesRequest, {
 			method: "GET",
-		}).then((response) => response.json());
+		})
+			.then((response) => response.json())
+			.catch((err) => {
+				response.status(500).json({ message: err.message });
+			});
+	} else {
+		recipesRequest = recipesURL;
+		recipesResponse = await fetch(recipesRequest, {
+			method: "GET",
+		})
+			.then((response) => response.json())
+			.catch((err) => {
+				response.status(500).json({ message: err.message });
+			});
 	}
-	response.send(foodResponse);
+
+	response.send(recipesResponse);
 });
 
-/* Get Food by Search, Barcode, or User ID */
+/* Get Recipe by User ID */
 router.get("/", async (request, response) => {
-	if (request.query.search) {
-		foodRequest = `${foodURL}/?search=${request.query.search}`;
-		foodResponse = await fetch(foodRequest, {
-			method: "GET",
-		}).then((response) => response.json());
-	} else if (request.query.barcode) {
-		// We could authenticate?
-		/*
-		let tokenIsAuthenticated = await AuthenticateToken(request, authURL);
-		if (!tokenIsAuthenticated){
-			response.status(403).json({ message: "Failed Authentication: Access is Forbidden."})
-		}
-		*/
-		foodRequest = `${foodURL}/?barcode=${request.query.barcode}`;
-		foodResponse = await fetch(foodRequest, {
-			method: "GET",
-		}).then((response) => response.json());
-	} else if (request.query.userId) {
+	if (request.query.userId) {
 		// We will do user authentication to prevent client from making this request unless it is their own account
 		/*
 		let tokenIsAuthenticated = await AuthenticateToken(request, authURL);
@@ -50,13 +47,50 @@ router.get("/", async (request, response) => {
 			response.status(403).json({ message: "Failed Authentication: Access is Forbidden."})
 		}
 		*/
-		foodRequest = `${foodURL}/?userId=${request.query.userId}`;
-		foodResponse = await fetch(foodRequest, {
+		recipesRequest = `${recipesURL}/?userId=${request.query.userId}`;
+		recipesResponse = await fetch(recipesRequest, {
 			method: "GET",
 		}).then((response) => response.json());
 	}
 
-	response.send(foodResponse);
+	response.send(recipesResponse);
+});
+
+/* POST a new recipe */
+router.post("/", async (request, response) => {
+	// Authentication must happen!!
+	recipesRequest = recipesURL;
+	recipesResponse = await fetch(recipesRequest, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(request.body),
+	}).then((response) => response.json());
+
+	response.send(recipesResponse);
+});
+
+/* PATCH a recipe by ID */
+router.patch("/:recipeId", async (request, response) => {
+	// Authentication must happen!!
+	recipesRequest = recipesURL;
+	recipesResponse = await fetch(recipesRequest, {
+		method: "PATCH",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(request.body),
+	}).then((response) => response.json());
+
+	response.send(recipesResponse);
+});
+
+/* DELETE a recipe by ID */
+router.delete("/:recipeId", async (request, response) => {
+	if (request.params.recipeId) {
+		recipesRequest = `${recipesURL}/${request.params.recipeId}`;
+		recipesResponse = await fetch(recipesRequest, {
+			method: "DELETE",
+		}).then((response) => response.json());
+	}
+	response.send(recipesResponse);
 });
 
 module.exports = router;

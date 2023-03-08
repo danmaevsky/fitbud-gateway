@@ -1,36 +1,37 @@
 // Imports
-
-require("../util");
-
-
 require("dotenv").config();
+const util = require("../util");
+const auth = require("../auth");
 const express = require("express");
+
 const FITNESS_URL = process.env.FITNESS_URL;
 const ACCOUNT_PORT = process.env.ACCOUNT_PORT;
 
 const router = express.Router();
-const fitnessURL = `${FITNESS_URL}/food`;
+const foodURL = `${FITNESS_URL}/food`;
 // const authURL = `http://localhost:${ACCOUNT_PORT}/auth`;
 let foodRequest;
 let foodResponse;
 
 /* Get Food by ID */
 router.get("/:foodId", async (request, response) => {
-
 	if (request.params.foodId) {
-		foodRequest = `${fitnessURL}/${request.params.foodId}`;
+		foodRequest = `${foodURL}/${request.params.foodId}`;
 		foodResponse = await fetch(foodRequest, {
 			method: "GET",
-		}).then((response) => response.json());
+		})
+			.then((response) => response.json())
+			.catch((err) => {
+				response.status(500).json({ message: err.message });
+			});
 	}
 	response.send(foodResponse);
-
 });
 
 /* Get Food by Search, Barcode, or User ID */
 router.get("/", async (request, response) => {
 	if (request.query.search) {
-		foodRequest = `${fitnessURL}/?search=${request.query.search}`;
+		foodRequest = `${foodURL}/?search=${request.query.search}`;
 		foodResponse = await fetch(foodRequest, {
 			method: "GET",
 		}).then((response) => response.json());
@@ -42,7 +43,7 @@ router.get("/", async (request, response) => {
 			response.status(403).json({ message: "Failed Authentication: Access is Forbidden."})
 		}
 		*/
-		foodRequest = `${fitnessURL}/?barcode=${request.query.barcode}`;
+		foodRequest = `${foodURL}/?barcode=${request.query.barcode}`;
 		foodResponse = await fetch(foodRequest, {
 			method: "GET",
 		}).then((response) => response.json());
@@ -54,7 +55,7 @@ router.get("/", async (request, response) => {
 			response.status(403).json({ message: "Failed Authentication: Access is Forbidden."})
 		}
 		*/
-		foodRequest = `${fitnessURL}/?userId=${request.query.userId}`;
+		foodRequest = `${foodURL}/?userId=${request.query.userId}`;
 		foodResponse = await fetch(foodRequest, {
 			method: "GET",
 		}).then((response) => response.json());
@@ -63,61 +64,17 @@ router.get("/", async (request, response) => {
 	response.send(foodResponse);
 });
 
+/* POST a new food to the database */
 router.post("/", async (request, response) => {
-	// FILLER
-});
+	// Authentication must happen!!
+	foodRequest = foodURL;
+	foodResponse = await fetch(foodRequest, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(request.body),
+	}).then((response) => response.json());
 
-function ValidateFoodSubmission(response) {
-	const requiredTopLevelProps = [
-		"userId",
-		"foodName",
-		"brandName",
-		"barcode",
-		"servingName",
-		"servingQuantity",
-		"servingQuantityUnit",
-		"nutritionalContent",
-	];
-	const requiredNutrientsProps = [
-		"kcal",
-		"totalFat",
-		"saturatedFat",
-		"transFat",
-		"polyunsaturatedFat",
-		"monounsaturatedFat",
-		"cholesterol",
-		"sodium",
-		"totalCarb",
-		"dietaryFiber",
-		"totalSugar",
-		"addedSugar",
-		"sugarAlcohols",
-		"protein",
-		"vitaminD",
-		"calcium",
-		"iron",
-		"potassium",
-		"vitaminA",
-		"vitaminC",
-		"vitaminE",
-		"thiamin",
-		"riboflavin",
-		"niacin",
-		"vitaminB6",
-		"folate",
-		"vitaminB12",
-		"biotin",
-		"pantothenicAcid",
-		"phosphorus",
-		"iodine",
-		"magnesium",
-		"selenium",
-	];
-	return (
-		Boolean(response.body) &&
-		requiredTopLevelProps.reduce((accumulator, current) => accumulator && Object.hasOwn(response.body, current), true) &&
-		requiredNutrientsProps.reduce((accumulator, current) => accumulator && Object.hasOwn(response.body.nutritionalContent, current), true)
-	);
-}
+	response.send(foodResponse);
+});
 
 module.exports = router;
