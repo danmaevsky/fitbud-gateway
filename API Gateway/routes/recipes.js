@@ -72,7 +72,7 @@ router.post("/", async (request, response) => {
 /* PATCH a recipe by ID */
 router.patch("/:recipeId", async (request, response) => {
 	// Authentication must happen!!
-	recipesRequest = recipesURL;
+	recipesRequest = request.params.recipeId ? `${recipesURL}/${request.params.recipeId}` : recipesURL;
 	recipesResponse = await fetch(recipesRequest, {
 		method: "PATCH",
 		headers: { "Content-Type": "application/json" },
