@@ -1,6 +1,5 @@
 // Imports
-import AuthenticateToken from "../util";
-
+require("../util")
 require("dotenv").config();
 const express = require("express");
 const FITNESS_PORT = process.env.FITNESS_PORT;
@@ -19,7 +18,7 @@ router.get("/:foodId", async (request, response) => {
         foodResponse = await fetch(foodRequest, {
             method: "GET",
         }).then((response) => response.json());
-    }
+    }// Add else
     response.send(foodResponse);
 });
 
