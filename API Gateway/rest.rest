@@ -1,0 +1,85 @@
+POST http://localhost:8000/recipes
+Content-Type: application/json
+
+{
+    "userId": "6407f1e1dc4ab79882933fe1",
+    "name": "Chicken Fajitas",
+    "numServings": 4,
+    "macros": {
+        "kcal": 100,
+        "protein": 5,
+        "totalCarb": 10,
+        "totalFat": 7
+    },
+    "ingredients": [
+        {
+            "foodId": "0",
+            "servingName": "1 slice",
+            "numServings": 7,
+            "quantityMetric": 300
+        },
+        {
+            "foodId": "1",
+            "servingName": "1 oz",
+            "numServings": 3,
+            "quantityMetric": 84
+        }
+    ]
+}
+
+###
+
+GET http://localhost:8000/recipes/6408d6a9fcf2d37925a87331
+
+###
+DELETE http://localhost:8000/recipes/6408d6a9fcf2d37925a87331
+
+###
+POST http://localhost:8000/food
+Content-Type:  application/json
+
+{
+    "name": "Test Food",
+    "brandOwner": "Test Brand Owner",
+    "brandName": "Test Brand Name",
+    "barcode": "123456789012",
+    "userId": "6407f1e1dc4ab79882933fe1",
+    "servingQuantity": 1,
+    "servingQuantityUnit": "g",
+    "servingName": "1 slice",
+    "nutritionalContent": {
+        "kcal": 10,
+        "totalFat": null,
+        "saturatedFat": null,
+        "transFat": null,
+        "polyunsaturatedFat": null,
+        "monounsaturatedFat": null,
+        "cholesterol": null,
+        "sodium": null,
+        "totalCarb": null,
+        "dietaryFiber": null,
+        "totalSugar": null,
+        "addedSugar": null,
+        "sugarAlcohols": null,
+        "protein": null,
+        "vitaminD": null,
+        "calcium": null,
+        "iron": null,
+        "potassium": null,
+        "vitaminA": null,
+        "vitaminC": null,
+        "vitaminE": null,
+        "thiamin": null,
+        "riboflavin": null,
+        "niacin": null,
+        "vitaminB6": null,
+        "folate": null,
+        "vitaminB12": null,
+        "biotin": null,
+        "pantothenicAcid": null,
+        "phosphorus": null,
+        "iodine": null,
+        "magnesium": null,
+        "selenium": null
+    }
+}
