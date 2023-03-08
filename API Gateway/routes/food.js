@@ -59,4 +59,61 @@ router.get("/", async (request, response) => {
     response.send(foodResponse);
 });
 
+router.post("/", async (request, response) => {
+    // FILLER
+});
+
+function ValidateFoodSubmission(response) {
+    const requiredTopLevelProps = [
+        "userId",
+        "foodName",
+        "brandName",
+        "barcode",
+        "servingName",
+        "servingQuantity",
+        "servingQuantityUnit",
+        "nutritionalContent",
+    ];
+    const requiredNutrientsProps = [
+        "kcal",
+        "totalFat",
+        "saturatedFat",
+        "transFat",
+        "polyunsaturatedFat",
+        "monounsaturatedFat",
+        "cholesterol",
+        "sodium",
+        "totalCarb",
+        "dietaryFiber",
+        "totalSugar",
+        "addedSugar",
+        "sugarAlcohols",
+        "protein",
+        "vitaminD",
+        "calcium",
+        "iron",
+        "potassium",
+        "vitaminA",
+        "vitaminC",
+        "vitaminE",
+        "thiamin",
+        "riboflavin",
+        "niacin",
+        "vitaminB6",
+        "folate",
+        "vitaminB12",
+        "biotin",
+        "pantothenicAcid",
+        "phosphorus",
+        "iodine",
+        "magnesium",
+        "selenium",
+    ];
+    return (
+        Boolean(response.body) &&
+        requiredTopLevelProps.reduce((accumulator, current) => accumulator && Object.hasOwn(response.body, current), true) &&
+        requiredNutrientsProps.reduce((accumulator, current) => accumulator && Object.hasOwn(response.body.nutritionalContent, current), true)
+    );
+}
+
 module.exports = router;

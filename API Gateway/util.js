@@ -12,3 +12,7 @@ export async function AuthenticateToken(request, authURL) {
         return authorized;
     }
 }
+
+export async function UserMatchesToken(request) {
+    // Some code for parsing the JSON Web Token and seeing if
+}
