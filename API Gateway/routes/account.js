@@ -1,46 +1,53 @@
 require("dotenv").config();
+require("../util");
 const express = require("express");
-const FITNESS_PORT = process.env.FITNESS_PORT;
+const ACCOUNT_PORT = process.env.ACCOUNT_PORT;
 
 const router = express.Router();
-const fitnessURL = `http://localhost:${FITNESS_PORT}/food`;
-let fitnessRequest;
-let fitnessResponse;
+const accountURL = `http://localhost:${ACCOUNT_PORT}/account`;
+let accountRequest;
+let accountResponse;
 
-/* Get Food by ID */
-router.get("/:foodId", async (request, response) => {
-	if (request.params.foodId) {
-		fitnessRequest = `${fitnessURL}/${request.params.foodId}`;
-		fitnessResponse = await fetch(fitnessRequest, {
-			method: "GET",
-		}).then((response) => response.json());
-	}
-	// console.log(fitnessResponse);
-	response.send(fitnessResponse);
-});
+/* Post Account Creation */
+router.post("/createAccount", async (request, response) => {
 
-/* Get Food by Search, Barcode, or User ID */
-router.get("/", async (request, response) => {
-	if (request.query.search) {
-		fitnessRequest = `${fitnessURL}/?search=${request.query.search}`;
-		fitnessResponse = await fetch(fitnessRequest, {
-			method: "GET",
-		}).then((response) => response.json());
-	} else if (request.query.barcode) {
-		// We could authenticate?
-		fitnessRequest = `${fitnessURL}/?barcode=${request.query.barcode}`;
-		fitnessResponse = await fetch(fitnessRequest, {
-			method: "GET",
-		}).then((response) => response.json());
-	} else if (request.query.userId) {
-		// We will do user authentication to prevent client from making this request unless it is their own account
-		fitnessRequest = `${fitnessURL}/?userId=${request.query.userId}`;
-		fitnessResponse = await fetch(fitnessRequest, {
-			method: "GET",
-		}).then((response) => response.json());
-	}
+	accountRequest = `${accountURL}/createAccount`;
+	accountResponse = await fetch(accountRequest, {
+		method: "POST",
+		body: request.body
+	}).then((response) => response.json());
 
-	response.send(fitnessResponse);
-});
+	reponse.send(fitnessResponse);
+
+})
+
+/* Post User Login */
+router.post("/login", async (request, response) => {
+
+	accountRequest = `${accountURL}/login`;
+	accountResponse = await fetch(accountRequest, {
+		method: "POST",
+		body: request.body
+
+	}).then((response) => response.json());
+
+	reponse.send(fitnessResponse);
+
+})
+
+/* Put to Change Password */
+router.put("/changePassword", async (request, response) => {
+
+	accountRequest = `${accountURL}/changePassword`;
+	accountResponse = await fetch(accountRequest, {
+		method: "PUT",
+		body: request.body
+
+	}).then((response) => response.json());
+
+	reponse.send(fitnessResponse);
+
+})
+
 
 module.exports = router;

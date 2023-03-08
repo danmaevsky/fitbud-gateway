@@ -1,4 +1,5 @@
 // Helper function for authenticating JWTs
+
 async function AuthenticateToken(request, response, next) {
 	if (!request.get("Authorization")) {
 		return false;
