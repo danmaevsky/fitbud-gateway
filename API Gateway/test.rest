@@ -1,5 +1,0 @@
-GET http://localhost:8000/exercise/strength/6408df29d439c6f4213f041f
-
-###
-
-GET http://localhost:8000/exercise/strength/?search=Bench
