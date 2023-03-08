@@ -1,10 +1,10 @@
 require("dotenv").config();
 require("../util");
 const express = require("express");
-const ACCOUNT_PORT = process.env.ACCOUNT_PORT;
+const ACCOUNT_URL = process.env.ACCOUNT_URL;
 
 const router = express.Router();
-const accountURL = `http://localhost:${ACCOUNT_PORT}/account`;
+const accountURL = `${ACCOUNT_URL}/account`;
 let accountRequest;
 let accountResponse;
 
@@ -14,10 +14,11 @@ router.post("/createAccount", async (request, response) => {
 	accountRequest = `${accountURL}/createAccount`;
 	accountResponse = await fetch(accountRequest, {
 		method: "POST",
-		body: request.body
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify(request.body)
 	}).then((response) => response.json());
 
-	reponse.send(fitnessResponse);
+	response.send(accountResponse);
 
 })
 
@@ -27,11 +28,11 @@ router.post("/login", async (request, response) => {
 	accountRequest = `${accountURL}/login`;
 	accountResponse = await fetch(accountRequest, {
 		method: "POST",
-		body: request.body
-
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify(request.body)
 	}).then((response) => response.json());
 
-	reponse.send(fitnessResponse);
+	response.send(accountResponse);
 
 })
 
@@ -41,11 +42,11 @@ router.put("/changePassword", async (request, response) => {
 	accountRequest = `${accountURL}/changePassword`;
 	accountResponse = await fetch(accountRequest, {
 		method: "PUT",
-		body: request.body
-
+		headers: {"Content-Type": "application/json"},
+		body: JSON.stringify(request.body)
 	}).then((response) => response.json());
 
-	reponse.send(fitnessResponse);
+	response.send(accountResponse);
 
 })
 
