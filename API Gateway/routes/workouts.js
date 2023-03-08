@@ -1,46 +1,81 @@
+require("../util")
 require("dotenv").config();
 const express = require("express");
 const FITNESS_PORT = process.env.FITNESS_PORT;
 
 const router = express.Router();
-const fitnessURL = `http://localhost:${FITNESS_PORT}/food`;
+const fitnessURL = `http://localhost:${FITNESS_PORT}/workouts`;
 let fitnessRequest;
 let fitnessResponse;
 
-/* Get Food by ID */
-router.get("/:foodId", async (request, response) => {
-	if (request.params.foodId) {
-		fitnessRequest = `${fitnessURL}/${request.params.foodId}`;
-		fitnessResponse = await fetch(fitnessRequest, {
-			method: "GET",
-		}).then((response) => response.json());
-	}
-	// console.log(fitnessResponse);
-	response.send(fitnessResponse);
-});
-
-/* Get Food by Search, Barcode, or User ID */
+/* Get all workouts for a User */
 router.get("/", async (request, response) => {
-	if (request.query.search) {
-		fitnessRequest = `${fitnessURL}/?search=${request.query.search}`;
-		fitnessResponse = await fetch(fitnessRequest, {
-			method: "GET",
-		}).then((response) => response.json());
-	} else if (request.query.barcode) {
-		// We could authenticate?
-		fitnessRequest = `${fitnessURL}/?barcode=${request.query.barcode}`;
-		fitnessResponse = await fetch(fitnessRequest, {
-			method: "GET",
-		}).then((response) => response.json());
-	} else if (request.query.userId) {
-		// We will do user authentication to prevent client from making this request unless it is their own account
-		fitnessRequest = `${fitnessURL}/?userId=${request.query.userId}`;
-		fitnessResponse = await fetch(fitnessRequest, {
-			method: "GET",
-		}).then((response) => response.json());
-	}
 
-	response.send(fitnessResponse);
-});
+	fitnessRequest = request.query.userId ? `${fitnessURL}/?userId=${request.query.userId}` : fitnessURL;
+
+	fitnessResponse = await fetch(fitnessRequest, {
+		method: "GET"
+	}).then((response) => response.json())
+
+
+	response.send(fitnessResponse)
+
+})
+
+/* Get workout by Id */
+router.get("/:workoutId", async (request, response) => {
+
+	// Authenticate this please 🥺
+
+	fitnessRequest = `${fitnessURL}/${request.params.workoutId}`;
+	fitnessResponse = await fetch(fitnessRequest, {
+		method: "GET"
+	}).then((response => response.json()))
+
+	response.send(fitnessResponse)
+})
+
+/* Post a new workout for a User */
+router.post("/", async (request, response) => {
+
+	// Authenticate this please 🥺	
+
+	fitnessRequest = fitnessURL
+	fitnessResponse = await fetch(fitnessRequest, {
+		method: "POST",
+		body: request.body
+	}).then((response => response.json()))
+
+	response.send(fitnessResponse)
+})
+
+/* Patch a workout from a User */
+router.post("/", async (request, response) => {
+
+	// Authenticate this please 🥺
+
+	fitnessRequest = fitnessURL
+	fitnessResponse = await fetch(fitnessRequest, {
+		method: "PATCH",
+		body: request.body
+	}).then((response => response.json()))
+
+	response.send(fitnessResponse)
+})
+
+/* Patch a workout from a User */
+router.delete("/:workoutId", async (request, response) => {
+
+	// Authenticate this please 🥺
+
+	fitnessRequest = request.params.workoutId ? `${fitnessURL}/${request.params.workoutId}` : fitnessURL;
+
+	fitnessResponse = await fetch(fitnessRequest, {
+		method: "DELETE",
+	}).then((response => response.json()))
+	
+	response.send(fitnessResponse)
+})
+
 
 module.exports = router;

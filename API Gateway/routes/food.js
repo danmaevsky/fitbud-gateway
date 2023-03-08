@@ -1,5 +1,7 @@
 // Imports
+
 require("../util");
+
 
 require("dotenv").config();
 const express = require("express");
@@ -14,6 +16,7 @@ let foodResponse;
 
 /* Get Food by ID */
 router.get("/:foodId", async (request, response) => {
+
 	if (request.params.foodId) {
 		foodRequest = `${fitnessURL}/${request.params.foodId}`;
 		foodResponse = await fetch(foodRequest, {
@@ -21,6 +24,7 @@ router.get("/:foodId", async (request, response) => {
 		}).then((response) => response.json());
 	}
 	response.send(foodResponse);
+
 });
 
 /* Get Food by Search, Barcode, or User ID */
