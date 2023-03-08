@@ -70,7 +70,17 @@ router.post("/", async (request, response) => {
 });
 
 /* PATCH a recipe by ID */
-router.post("/:recipeId", async (request, response) => {});
+router.patch("/:recipeId", async (request, response) => {
+	// Authentication must happen!!
+	recipesRequest = recipesURL;
+	recipesResponse = await fetch(recipesRequest, {
+		method: "PATCH",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(request.body),
+	}).then((response) => response.json());
+
+	response.send(recipesResponse);
+});
 
 /* DELETE a recipe by ID */
 router.delete("/:recipeId", async (request, response) => {
