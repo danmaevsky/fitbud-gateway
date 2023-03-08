@@ -50,11 +50,11 @@ router.post("/", async (request, response) => {
 })
 
 /* Patch a workout from a User */
-router.patch("/", async (request, response) => {
+router.patch("/:workoutId", async (request, response) => {
 
 	// Authenticate this please 🥺
 
-	fitnessRequest = fitnessURL
+	fitnessRequest = request.params.workoutId ? `${fitnessURL}/${request.params.workoutId}` : fitnessURL;
 	fitnessResponse = await fetch(fitnessRequest, {
 		method: "PATCH",
 		headers: {"Content-Type": "application/json"},
