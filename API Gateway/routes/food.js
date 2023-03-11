@@ -1,7 +1,6 @@
 // Imports
 require("dotenv").config();
 const util = require("../util");
-const auth = require("../auth");
 const express = require("express");
 
 const FITNESS_URL = process.env.FITNESS_URL;
@@ -14,7 +13,7 @@ let foodRequest;
 let foodResponse;
 
 /* Get Food by ID */
-router.get("/:foodId", async (request, response) => {
+router.get("/:foodId", util.AuthenticateToken, async (request, response) => {
     if (request.params.foodId) {
         foodRequest = `${foodURL}/${request.params.foodId}`;
         foodResponse = await fetch(foodRequest, {

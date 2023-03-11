@@ -2,25 +2,25 @@ require("dotenv").config();
 const AUTH_URL = process.env.AUTH_URL;
 
 module.exports.AuthenticateToken = async function AuthenticateToken(request, response, next) {
-    if (!request.get("Authorization")) {
+    let bearerToken = request.get("Authorization");
+    if (!bearerToken) {
         let err = new Error("Authentication Failed! No access token.");
         err.status = 401;
         return next(err);
     } else {
-        let { authorized } = await fetch(AUTH_URL, {
+        let authResponse = await fetch(AUTH_URL, {
             method: "POST",
-            body: {
-                token: request.get("Authorization"),
-            },
-        }).then((res) => {
-            response.status(res.status);
-            return res.json();
+            headers: { Authorization: bearerToken },
         });
-        if (authorized) {
+        let status = authResponse.status;
+        if (status === 200) {
             return next();
         } else {
+            let message = await authResponse.json();
+            console.log(message);
             let err = new Error("Authentication Failed!");
             err.status = 401;
+            response.status(authResponse.status).send(message);
             return next(err);
         }
     }
