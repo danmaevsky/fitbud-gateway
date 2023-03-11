@@ -15,7 +15,10 @@ router.get("/:foodId", async (request, response) => {
         foodRequest = `${foodURL}/${request.params.foodId}`;
         foodResponse = await fetch(foodRequest, {
             method: "GET",
-        }).then((response) => response.json());
+        }).then((res) => {
+            response.status(res.status);
+            return res.json();
+        });
     }
     response.send(foodResponse);
 });
@@ -26,20 +29,29 @@ router.get("/", async (request, response) => {
         foodRequest = `${foodURL}/?search=${request.query.search}`;
         foodResponse = await fetch(foodRequest, {
             method: "GET",
-        }).then((response) => response.json());
+        }).then((res) => {
+            response.status(res.status);
+            return res.json();
+        });
     } else if (request.query.barcode) {
         // We could authenticate?
         foodRequest = `${foodURL}/?barcode=${request.query.barcode}`;
         foodResponse = await fetch(foodRequest, {
             method: "GET",
-        }).then((response) => response.json());
+        }).then((res) => {
+            response.status(res.status);
+            return res.json();
+        });
     } else if (request.query.userId) {
         // We will do user authentication to prevent client from making this request unless it is their own account
 
         foodRequest = `${foodURL}/?userId=${request.query.userId}`;
         foodResponse = await fetch(foodRequest, {
             method: "GET",
-        }).then((response) => response.json());
+        }).then((res) => {
+            response.status(res.status);
+            return res.json();
+        });
     }
 
     response.send(foodResponse);
