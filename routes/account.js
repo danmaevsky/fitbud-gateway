@@ -64,4 +64,18 @@ router.put("/changePassword", util.AuthTokenMiddleware, async (request, response
 	response.send(authResponse);
 });
 
+/* DELETE to Delete Account */
+router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, response) => {
+	authRequest = `${AUTH_URL}/deleteAccount`;
+	authResponse = await fetch(authRequest, {
+		method: "DELETE",
+		headers: { Authorization: request.get("Authorization") },
+	}).then((res) => {
+		response.status(res.status);
+		return res.json();
+	});
+
+	response.send(authResponse);
+});
+
 module.exports = router;
