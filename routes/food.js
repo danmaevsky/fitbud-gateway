@@ -5,7 +5,6 @@ const util = require("../util");
 const express = require("express");
 
 const FITNESS_URL = process.env.FITNESS_URL;
-const ACCOUNT_PORT = process.env.ACCOUNT_PORT;
 
 const router = express.Router();
 const foodURL = `${FITNESS_URL}/food`;
@@ -14,7 +13,7 @@ let foodRequest;
 let foodResponse;
 
 /* Get Food by ID */
-router.get("/:foodId", util.AuthTokenMiddleware, async (request, response) => {
+router.get("/:foodId", async (request, response) => {
 	if (request.params.foodId) {
 		foodRequest = `${foodURL}/${request.params.foodId}`;
 		foodResponse = await fetch(foodRequest, {
