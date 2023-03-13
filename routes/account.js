@@ -1,17 +1,28 @@
 require("dotenv").config();
 const util = require("../util");
 const express = require("express");
-const ACCOUNT_URL = process.env.ACCOUNT_URL;
+const AUTH_URL = process.env.AUTH_URL;
+const PROFILE_URL = process.env.PROFILE_URL;
 
 const router = express.Router();
-const accountURL = `${ACCOUNT_URL}/account`;
+let authRequest;
+let authResponse;
 let accountRequest;
 let accountResponse;
 
 /* Post Account Creation */
 router.post("/createAccount", async (request, response) => {
-	accountRequest = `${accountURL}/createAccount`;
-	accountResponse = await fetch(accountRequest, {
+	// accountRequest = `${accountURL}/createAccount`;
+	// accountResponse = await fetch(accountRequest, {
+	// 	method: "POST",
+	// 	headers: { "Content-Type": "application/json" },
+	// 	body: JSON.stringify(request.body),
+	// }).then((res) => {
+	// 	response.status(res.status);
+	// 	return res.json();
+	// });
+	authRequest = `${AUTH_URL}/createAccount`;
+	authResponse = await fetch(authRequest, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(request.body),
@@ -20,13 +31,13 @@ router.post("/createAccount", async (request, response) => {
 		return res.json();
 	});
 
-	response.send(accountResponse);
+	response.send(authResponse);
 });
 
 /* Post User Login */
 router.post("/login", async (request, response) => {
-	accountRequest = `${accountURL}/login`;
-	accountResponse = await fetch(accountRequest, {
+	authRequest = `${AUTH_URL}/login`;
+	authResponse = await fetch(authRequest, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(request.body),
@@ -35,13 +46,13 @@ router.post("/login", async (request, response) => {
 		return res.json();
 	});
 
-	response.send(accountResponse);
+	response.send(authResponse);
 });
 
 /* Put to Change Password */
 router.put("/changePassword", util.AuthTokenMiddleware, async (request, response) => {
-	accountRequest = `${accountURL}/changePassword`;
-	accountResponse = await fetch(accountRequest, {
+	authRequest = `${AUTH_URL}/changePassword`;
+	authResponse = await fetch(authRequest, {
 		method: "PUT",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(request.body),
@@ -50,7 +61,7 @@ router.put("/changePassword", util.AuthTokenMiddleware, async (request, response
 		return res.json();
 	});
 
-	response.send(accountResponse);
+	response.send(authResponse);
 });
 
 module.exports = router;
