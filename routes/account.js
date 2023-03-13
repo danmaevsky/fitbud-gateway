@@ -51,6 +51,8 @@ router.post("/login", async (request, response) => {
 
 /* POST a new access token given a refresh token */
 router.post("/newToken", async (request, response) => {
+	console.log(request.body);
+	console.log(JSON.stringify(request.body));
 	authRequest = `${AUTH_URL}/newToken`;
 	authResponse = await fetch(authRequest, {
 		method: "POST",
