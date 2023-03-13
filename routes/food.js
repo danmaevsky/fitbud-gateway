@@ -14,7 +14,7 @@ let foodRequest;
 let foodResponse;
 
 /* Get Food by ID */
-router.get("/:foodId", async (request, response) => {
+router.get("/:foodId", util.AuthTokenMiddleware, async (request, response) => {
 	if (request.params.foodId) {
 		foodRequest = `${foodURL}/${request.params.foodId}`;
 		foodResponse = await fetch(foodRequest, {
