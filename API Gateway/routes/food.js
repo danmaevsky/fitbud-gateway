@@ -1,5 +1,6 @@
 // Imports
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 const util = require("../util");
 const express = require("express");
 
@@ -13,7 +14,7 @@ let foodRequest;
 let foodResponse;
 
 /* Get Food by ID */
-router.get("/:foodId", util.AuthenticateToken, async (request, response) => {
+router.get("/:foodId", util.AuthTokenMiddleware, async (request, response) => {
     if (request.params.foodId) {
         foodRequest = `${foodURL}/${request.params.foodId}`;
         foodResponse = await fetch(foodRequest, {
@@ -32,7 +33,6 @@ router.get("/:foodId", util.AuthenticateToken, async (request, response) => {
 
 /* Get Food by Search, Barcode, or User ID */
 router.get("/", async (request, response) => {
-    console.log("GET /");
     if (request.query.search) {
         foodRequest = `${foodURL}/?search=${request.query.search}`;
         foodResponse = await fetch(foodRequest, {
@@ -64,6 +64,18 @@ router.get("/", async (request, response) => {
 			response.status(403).json({ message: "Failed Authentication: Access is Forbidden."})
 		}
 		*/
+        if ((await util.AuthenticateToken(request, response)) !== 200) {
+            return;
+        }
+
+        let token = request.get("Authorization").split(" ")[1];
+        let userId = jwt.decode(token).userId;
+        if (userId !== request.query.userId) {
+            response.status(401).send({
+                message: "Authentication failed. Credentials do not match query parameter 'userId'. Identity theft is pretty bad you know...",
+            });
+            return;
+        }
         foodRequest = `${foodURL}/?userId=${request.query.userId}`;
         foodResponse = await fetch(foodRequest, {
             method: "GET",
@@ -77,13 +89,19 @@ router.get("/", async (request, response) => {
 });
 
 /* POST a new food to the database */
-router.post("/", async (request, response) => {
+router.post("/", util.AuthTokenMiddleware, async (request, response) => {
     // Authentication must happen!!
+    let token = request.get("Authorization").split(" ")[1];
+    let userId = jwt.decode(token).userId;
     foodRequest = foodURL;
+    let foodRequestBody = {
+        userId: userId,
+        ...request.body,
+    };
     foodResponse = await fetch(foodRequest, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(request.body),
+        body: JSON.stringify(foodRequestBody),
     }).then((res) => {
         response.status(res.status);
         return res.json();
