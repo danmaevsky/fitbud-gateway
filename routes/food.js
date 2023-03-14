@@ -57,19 +57,13 @@ router.get("/", async (request, response) => {
 		});
 	} else if (request.query.userId) {
 		// We will do user authentication to prevent client from making this request unless it is their own account
-		/*
-		let tokenIsAuthenticated = await AuthenticateToken(request, authURL);
-		if (!tokenIsAuthenticated){
-			response.status(403).json({ message: "Failed Authentication: Access is Forbidden."})
-		}
-		*/
 		if ((await util.AuthenticateToken(request, response)) !== 200) {
 			return;
 		}
 
 		let token = request.get("Authorization").split(" ")[1];
 		let userId = jwt.decode(token).userId;
-		if (userId !== request.query.userId) {
+		if (!userId || userId !== request.query.userId) {
 			response.status(401).send({
 				message: "Authentication failed. Credentials do not match query parameter 'userId'. Identity theft is pretty bad you know...",
 			});

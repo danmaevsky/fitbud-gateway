@@ -5,11 +5,9 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const express = require("express");
 const FITNESS_URL = process.env.FITNESS_URL;
-const ACCOUNT_URL = process.env.ACCOUNT_URL;
 
 const router = express.Router();
 const recipesURL = `${FITNESS_URL}/recipes`;
-const authURL = `${ACCOUNT_URL}/auth`;
 let recipesRequest;
 let recipesResponse;
 
