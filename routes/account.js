@@ -7,21 +7,65 @@ const PROFILE_URL = process.env.PROFILE_URL;
 const router = express.Router();
 let authRequest;
 let authResponse;
-let accountRequest;
-let accountResponse;
+let profileRequest;
+let profileResponse;
 
 /* Post Account Creation */
 router.post("/createAccount", async (request, response) => {
-	// accountRequest = `${accountURL}/createAccount`;
-	// accountResponse = await fetch(accountRequest, {
-	// 	method: "POST",
-	// 	headers: { "Content-Type": "application/json" },
-	// 	body: JSON.stringify(request.body),
-	// }).then((res) => {
-	// 	response.status(res.status);
-	// 	return res.json();
-	// });
+	let authStatus;
 	authRequest = `${AUTH_URL}/createAccount`;
+	authResponse = await fetch(authRequest, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ email: request.body.email, password: request.body.password }),
+	}).then((res) => {
+		authStatus = res.status;
+		return res.json();
+	});
+
+	// let profileStatus;
+	// profileRequest = `${PROFILE_URL}/createProfile`
+	// profileResponse = await fetch(profileRequest, {
+	// 	method: "POST",
+	// 	headers: { "Content-Type" : "application/json" },
+	// 	body: JSON.stringify(request.body)
+	// }).then((res) => {
+	// 	profileStatus = res.status;
+	// 	return res.json();
+	// })
+
+	// if (authStatus !== 201){
+	// 	if (profileStatus !== 201){
+	// 		response.status(400).send({ message: "Account creation failed. Bad request."})
+	// 	}
+	// 	else {
+	// 		// rollback changes done in Profile database
+	// 		await fetch(`${PROFILE_URL}/deleteProfile`, {
+	// 			method: "DELETE",
+	// 			body: {userId: profileResponse.userId}
+	// 		})
+	// 		response.status(400).send({ message: "Account creation failed. Bad request." });
+	// 	}
+	// }
+	// else {
+	// 	if (authStatus !== 201) {
+	// 		response.status(400).send({ message: "Account creation failed. Bad request." });
+	// 	} else {
+	// 		// rollback changes done in Auth database
+	// 		await fetch(`${AUTH_URL}/deleteAccount`, {
+	// 			method: "DELETE",
+	// 			body: { userId: authResponse.userId },
+	// 		});
+	// 		response.status(400).send({ message: "Account creation failed. Bad request." });
+	// 	}
+	// }
+
+	response.send(authResponse);
+});
+
+/* Post User Login */
+router.post("/login", async (request, response) => {
+	authRequest = `${AUTH_URL}/login`;
 	authResponse = await fetch(authRequest, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -34,13 +78,12 @@ router.post("/createAccount", async (request, response) => {
 	response.send(authResponse);
 });
 
-/* Post User Login */
-router.post("/login", async (request, response) => {
-	authRequest = `${AUTH_URL}/login`;
+/* Post User Logout */
+router.post("/logout", util.AuthTokenMiddleware, async (request, response) => {
+	authRequest = `${AUTH_URL}/logout`;
 	authResponse = await fetch(authRequest, {
 		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(request.body),
+		headers: { Authorization: request.get("Authorization") },
 	}).then((res) => {
 		response.status(res.status);
 		return res.json();
