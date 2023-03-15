@@ -23,42 +23,40 @@ router.post("/createAccount", async (request, response) => {
 		return res.json();
 	});
 
-	// let profileStatus;
-	// profileRequest = `${PROFILE_URL}/createProfile`
-	// profileResponse = await fetch(profileRequest, {
-	// 	method: "POST",
-	// 	headers: { "Content-Type" : "application/json" },
-	// 	body: JSON.stringify(request.body)
-	// }).then((res) => {
-	// 	profileStatus = res.status;
-	// 	return res.json();
-	// })
+	let profileStatus;
+	profileRequest = `${PROFILE_URL}/createProfile`;
+	profileResponse = await fetch(profileRequest, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(request.body),
+	}).then((res) => {
+		profileStatus = res.status;
+		return res.json();
+	});
 
-	// if (authStatus !== 201){
-	// 	if (profileStatus !== 201){
-	// 		response.status(400).send({ message: "Account creation failed. Bad request."})
-	// 	}
-	// 	else {
-	// 		// rollback changes done in Profile database
-	// 		await fetch(`${PROFILE_URL}/deleteProfile`, {
-	// 			method: "DELETE",
-	// 			body: {userId: profileResponse.userId}
-	// 		})
-	// 		response.status(400).send({ message: "Account creation failed. Bad request." });
-	// 	}
-	// }
-	// else {
-	// 	if (authStatus !== 201) {
-	// 		response.status(400).send({ message: "Account creation failed. Bad request." });
-	// 	} else {
-	// 		// rollback changes done in Auth database
-	// 		await fetch(`${AUTH_URL}/deleteAccount`, {
-	// 			method: "DELETE",
-	// 			body: { userId: authResponse.userId },
-	// 		});
-	// 		response.status(400).send({ message: "Account creation failed. Bad request." });
-	// 	}
-	// }
+	if (authStatus !== 201) {
+		if (profileStatus !== 201) {
+			response.status(400).send({ message: "Account creation failed. Bad request." });
+		} else {
+			// rollback changes done in Profile database
+			await fetch(`${PROFILE_URL}/deleteProfile`, {
+				method: "DELETE",
+				body: { userId: profileResponse.userId },
+			});
+			response.status(400).send({ message: "Account creation failed. Bad request." });
+		}
+	} else {
+		if (authStatus !== 201) {
+			response.status(400).send({ message: "Account creation failed. Bad request." });
+		} else {
+			// rollback changes done in Auth database
+			await fetch(`${AUTH_URL}/deleteAccount`, {
+				method: "DELETE",
+				body: { userId: authResponse.userId },
+			});
+			response.status(400).send({ message: "Account creation failed. Bad request." });
+		}
+	}
 
 	response.send(authResponse);
 });
@@ -132,6 +130,14 @@ router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, respon
 		response.status(res.status);
 		return res.json();
 	});
+
+	// call to Profile API
+
+	// call to Food API
+
+	// call to Recipe API
+
+	//
 
 	response.send(authResponse);
 });
