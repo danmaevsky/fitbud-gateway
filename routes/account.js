@@ -28,7 +28,7 @@ router.post("/createAccount", async (request, response) => {
 	profileResponse = await fetch(profileRequest, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(request.body),
+		body: JSON.stringify({ ...request.body, userId: authResponse.userId }),
 	}).then((res) => {
 		profileStatus = res.status;
 		return res.json();
