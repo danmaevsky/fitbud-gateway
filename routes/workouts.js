@@ -9,73 +9,143 @@ let fitnessRequest;
 let fitnessResponse;
 
 /* Get all workouts for a User */
-router.get("/", async (request, response) => {
+router.get("/", util.AuthTokenMiddleware, async (request, response) => {
 
-	fitnessRequest = request.query.userId ? `${fitnessURL}/?userId=${request.query.userId}` : fitnessURL;
+	let token = request.get("Authorization").split(" ")[1];
+	let userId = jwt.decode(token).userId;
 
+	fitnessRequest = `${fitnessURL}/?userId=${userId}`;
 	fitnessResponse = await fetch(fitnessRequest, {
 		method: "GET"
-	}).then((response) => response.json())
-
+	})
+	.then((res) => {
+		response.status(res.status);
+		return res.json();
+	})
+	.catch((err) => {
+		response.status(500).send({ message: err.message });
+	});
 
 	response.send(fitnessResponse)
 
 })
 
 /* Get workout by Id */
-router.get("/:workoutId", async (request, response) => {
-
-	// Authenticate this please 🥺
+router.get("/:workoutId", util.AuthTokenMiddleware, async (request, response) => {
 
 	fitnessRequest = `${fitnessURL}/${request.params.workoutId}`;
 	fitnessResponse = await fetch(fitnessRequest, {
 		method: "GET"
-	}).then((response => response.json()))
+	})
+	.then((res) => {
+		response.status(res.status);
+		return res.json();
+	})
+	.catch((err) => {
+		response.status(500).send({ message: err.message });
+	});
 
-	response.send(fitnessResponse)
+	let token = request.get("Authorization").split(" ")[1];
+	let userId = jwt.decode(token).userId;
+	if (userId !== fitnessResponse.userId) {
+		response.status(401).send({ message: "Not permitted to view workouts that do not belong to you!" });
+	}
+
+	response.send(fitnessResponse);
+
 })
 
 /* Post a new workout for a User */
-router.post("/", async (request, response) => {
+router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 
-	// Authenticate this please 🥺	
+	let token = request.get("Authorization").split(" ")[1];
+	let userId = jwt.decode(token).userId;
 	fitnessRequest = fitnessURL
+
+	let workoutRequestBody = {
+		userId: userId,
+		...request.body,
+	};
+
 	fitnessResponse = await fetch(fitnessRequest, {
 		method: "POST",
 		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify(request.body)
-	}).then((response => response.json()))
+		body: JSON.stringify(workoutRequestBody)
+	})
+	.then((res) => {
+		response.status(res.status);
+		return res.json();
+	})
+	.catch((err) => {
+		response.status(500).send({ message: err.message });
+	});
 
 	response.send(fitnessResponse)
+
 })
 
 /* Patch a workout from a User */
-router.patch("/:workoutId", async (request, response) => {
+router.patch("/:workoutId", util.AuthTokenMiddleware, async (request, response) => {
 
-	// Authenticate this please 🥺
+	if (request.params.workoutId) {
 
-	fitnessRequest = request.params.workoutId ? `${fitnessURL}/${request.params.workoutId}` : fitnessURL;
-	fitnessResponse = await fetch(fitnessRequest, {
-		method: "PATCH",
-		headers: {"Content-Type": "application/json"},
-		body: JSON.stringify(request.body)
-	}).then((response => response.json()))
+		let token = request.get("Authorization").split(" ")[1];
+		let userId = jwt.decode(token).userId;
+
+		fitnessRequest = `${fitnessURL}/${request.params.workoutId}`;
+		let workoutRequestBody = {
+			userId: userId,
+			...request.body,
+		};
+
+		fitnessResponse = await fetch(fitnessRequest, {
+			method: "PATCH",
+			headers: {"Content-Type": "application/json"},
+			body: JSON.stringify(workoutRequestBody),
+		})
+		.then((res) => {
+			response.status(res.status);
+			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
+		});
+	}
+	else {
+		return response.status(400).send({ message: "Bad Request"});
+	}
 
 	response.send(fitnessResponse)
 })
 
 /* Delete a workout from a User */
-router.delete("/:workoutId", async (request, response) => {
-
-	// Authenticate this please 🥺
-
-	fitnessRequest = request.params.workoutId ? `${fitnessURL}/${request.params.workoutId}` : fitnessURL;
-
-	fitnessResponse = await fetch(fitnessRequest, {
-		method: "DELETE",
-	}).then((response => response.json()))
+router.delete("/:workoutId", util.AuthTokenMiddleware, async (request, response) => {
 	
+	if (request.params.workoutId) {
+
+		let token = request.get("Authorization").split(" ")[1];
+		let userId = jwt.decode(token).userId;
+		fitnessRequest = `${fitnessURL}/${request.params.workoutId}`;
+		
+		fitnessResponse = await fetch(fitnessRequest, {
+			method: "DELETE",
+			body: JSON.stringify({ userId: userId })
+		})
+		.then((res) => {
+			response.status(res.status);
+			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
+		});
+
+	}
+	else {
+		return response.status(400).send({ message: "Bad Request"});
+	}
+
 	response.send(fitnessResponse)
+
 })
 
 

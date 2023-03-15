@@ -13,26 +13,25 @@ let recipesResponse;
 
 /* Get Recipe by ID */
 router.get("/:recipeId", util.AuthTokenMiddleware, async (request, response) => {
+	
+	
 	if (request.params.recipeId) {
 		recipesRequest = `${recipesURL}/${request.params.recipeId}`;
 		recipesResponse = await fetch(recipesRequest, {
 			method: "GET",
 		})
-			.then((response) => response.json())
-			.catch((err) => {
-				response.status(500).json({ message: err.message });
-			});
-	} else {
-		recipesRequest = recipesURL;
-		recipesResponse = await fetch(recipesRequest, {
-			method: "GET",
+		.then((res) => {
+			response.status(res.status);
+			return res.json();
 		})
-			.then((response) => response.json())
-			.catch((err) => {
-				response.status(500).json({ message: err.message });
-			});
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
+		});
 	}
-
+	else {
+		return response.status(400).send({ message: "Bad Request"});
+	}
+	
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 	if (userId !== recipesResponse.userId) {
@@ -44,6 +43,7 @@ router.get("/:recipeId", util.AuthTokenMiddleware, async (request, response) => 
 
 /* Get Recipe by User ID */
 router.get("/", util.AuthTokenMiddleware, async (request, response) => {
+
 	if (request.query.userId) {
 		let token = request.get("Authorization").split(" ")[1];
 		let userId = jwt.decode(token).userId;
@@ -60,19 +60,25 @@ router.get("/", util.AuthTokenMiddleware, async (request, response) => {
 		recipesRequest = `${recipesURL}/?userId=${request.query.userId}`;
 		recipesResponse = await fetch(recipesRequest, {
 			method: "GET",
-		}).then((res) => {
+		})
+		.then((res) => {
 			response.status(res.status);
 			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
 		});
+		
 	} else {
-		recipesResponse = {};
+		return response.status(400).send({ message: "Bad Request"})
 	}
+
 	response.send(recipesResponse);
 });
 
 /* POST a new recipe */
 router.post("/", util.AuthTokenMiddleware, async (request, response) => {
-	// Authentication must happen!!
+
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 	recipesRequest = recipesURL;
@@ -83,10 +89,14 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 	recipesResponse = await fetch(recipesRequest, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(recipesRequestBody),
-	}).then((res) => {
+		body: JSON.stringify(recipesRequestBody)
+	})
+	.then((res) => {
 		response.status(res.status);
 		return res.json();
+	})
+	.catch((err) => {
+		response.status(500).send({ message: err.message });
 	});
 
 	response.send(recipesResponse);
@@ -94,7 +104,7 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 
 /* PATCH a recipe by ID */
 router.patch("/:recipeId", util.AuthTokenMiddleware, async (request, response) => {
-	// Authentication must happen!!
+
 	if (request.params.recipeId) {
 		let token = request.get("Authorization").split(" ")[1];
 		let userId = jwt.decode(token).userId;
@@ -106,11 +116,19 @@ router.patch("/:recipeId", util.AuthTokenMiddleware, async (request, response) =
 		recipesResponse = await fetch(recipesRequest, {
 			method: "PATCH",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(recipesRequestBody),
-		}).then((res) => {
+			body: JSON.stringify(recipesRequestBody)
+		})
+		.then((res) => {
 			response.status(res.status);
 			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
 		});
+		
+	}
+	else {
+		return response.status(400).send({ message: "Bad Request"})
 	}
 
 	response.send(recipesResponse);
@@ -119,16 +137,24 @@ router.patch("/:recipeId", util.AuthTokenMiddleware, async (request, response) =
 /* DELETE a recipe by ID */
 router.delete("/:recipeId", util.AuthTokenMiddleware, async (request, response) => {
 	if (request.params.recipeId) {
+
 		let token = request.get("Authorization").split(" ")[1];
 		let userId = jwt.decode(token).userId;
 		recipesRequest = `${recipesURL}/${request.params.recipeId}`;
 		recipesResponse = await fetch(recipesRequest, {
 			method: "DELETE",
-			body: JSON.stringify({ userId: userId }),
-		}).then((res) => {
+			body: JSON.stringify({ userId: userId })
+		})
+		.then((res) => {
 			response.status(res.status);
 			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
 		});
+	}
+	else {
+		return response.status(400).send({ message: "Bad Request"})
 	}
 	response.send(recipesResponse);
 });
