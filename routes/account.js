@@ -12,7 +12,7 @@ let profileResponse;
 
 /* Post Account Creation */
 router.post("/createAccount", async (request, response) => {
-
+	let authStatus;
 	authRequest = `${AUTH_URL}/createAccount`;
 	authResponse = await fetch(authRequest, {
 		method: "POST",
@@ -20,14 +20,14 @@ router.post("/createAccount", async (request, response) => {
 		body: JSON.stringify({ email: request.body.email, password: request.body.password }),
 	})
 	.then((res) => {
-		response.status(res.status);
+		authStatus = res.status;
 		return res.json();
 	})
 	.catch((err) => {
 		response.status(500).send({ message: err.message });
 	});
 
-
+	let profileStatus;
 	profileRequest = `${PROFILE_URL}/createProfile`;
 	profileResponse = await fetch(profileRequest, {
 		method: "POST",
@@ -35,15 +35,15 @@ router.post("/createAccount", async (request, response) => {
 		body: JSON.stringify(request.body),
 	})
 	.then((res) => {
-		response.status(res.status);
+		profileStatus = res.status;
 		return res.json();
 	})
 	.catch((err) => {
 		response.status(500).send({ message: err.message });
 	});
 
-	if (authResponse.status !== 201) {
-		if (profileResponse.status !== 201) {
+	if (authStatus !== 201) {
+		if (profileStatus !== 201) {
 			response.status(400).send({ message: "Account creation failed. Bad request." });
 		} else {
 			// rollback changes done in Profile database
