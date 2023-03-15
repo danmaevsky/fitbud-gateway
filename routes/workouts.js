@@ -1,4 +1,4 @@
-require("../util")
+const util = require("../util")
 require("dotenv").config();
 const express = require("express");
 const FITNESS_URL = process.env.FITNESS_URL;
