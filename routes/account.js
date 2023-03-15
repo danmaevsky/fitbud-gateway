@@ -18,9 +18,13 @@ router.post("/createAccount", async (request, response) => {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ email: request.body.email, password: request.body.password }),
-	}).then((res) => {
+	})
+	.then((res) => {
 		authStatus = res.status;
 		return res.json();
+	})
+	.catch((err) => {
+		response.status(500).send({ message: err.message });
 	});
 
 	let profileStatus;
@@ -32,6 +36,9 @@ router.post("/createAccount", async (request, response) => {
 	}).then((res) => {
 		profileStatus = res.status;
 		return res.json();
+	})
+	.catch((err) => {
+		response.status(500).send({ message: err.message });
 	});
 
 	if (authStatus !== 201) {
@@ -42,6 +49,9 @@ router.post("/createAccount", async (request, response) => {
 			await fetch(`${PROFILE_URL}/deleteProfile`, {
 				method: "DELETE",
 				body: { userId: profileResponse.userId },
+			})
+			.catch((err) => {
+				response.status(500).send({ message: err.message });
 			});
 			response.status(400).send({ message: "Account creation failed. Bad request." });
 		}
@@ -53,6 +63,9 @@ router.post("/createAccount", async (request, response) => {
 			await fetch(`${AUTH_URL}/deleteAccount`, {
 				method: "DELETE",
 				body: { userId: authResponse.userId },
+			})
+			.catch((err) => {
+				response.status(500).send({ message: err.message });
 			});
 			response.status(400).send({ message: "Account creation failed. Bad request." });
 		}
@@ -68,9 +81,13 @@ router.post("/login", async (request, response) => {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(request.body),
-	}).then((res) => {
+	})
+	.then((res) => {
 		response.status(res.status);
 		return res.json();
+	})
+	.catch((err) => {
+		response.status(500).send({ message: err.message });
 	});
 
 	response.send(authResponse);
@@ -82,9 +99,13 @@ router.post("/logout", util.AuthTokenMiddleware, async (request, response) => {
 	authResponse = await fetch(authRequest, {
 		method: "POST",
 		headers: { Authorization: request.get("Authorization") },
-	}).then((res) => {
+	})
+	.then((res) => {
 		response.status(res.status);
 		return res.json();
+	})
+	.catch((err) => {
+		response.status(500).send({ message: err.message });
 	});
 
 	response.send(authResponse);
@@ -97,9 +118,13 @@ router.post("/newToken", async (request, response) => {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(request.body),
-	}).then((res) => {
+	})
+	.then((res) => {
 		response.status(res.status);
 		return res.json();
+	})
+	.catch((err) => {
+		response.status(500).send({ message: err.message });
 	});
 
 	response.send(authResponse);
@@ -112,9 +137,13 @@ router.put("/changePassword", util.AuthTokenMiddleware, async (request, response
 		method: "PUT",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(request.body),
-	}).then((res) => {
+	})
+	.then((res) => {
 		response.status(res.status);
 		return res.json();
+	})
+	.catch((err) => {
+		response.status(500).send({ message: err.message });
 	});
 
 	response.send(authResponse);
@@ -126,9 +155,13 @@ router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, respon
 	authResponse = await fetch(authRequest, {
 		method: "DELETE",
 		headers: { Authorization: request.get("Authorization") },
-	}).then((res) => {
+	})
+	.then((res) => {
 		response.status(res.status);
 		return res.json();
+	})
+	.catch((err) => {
+		response.status(500).send({ message: err.message });
 	});
 
 	// call to Profile API
