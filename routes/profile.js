@@ -1,62 +1,47 @@
 require("dotenv").config();
 const express = require("express");
-const FITNESS_PORT = process.env.FITNESS_PORT;
-const ACCOUNT_PORT = process.env.ACCOUNT_PORT;
+const util = require("../util");
+const PROFILE_URL = process.env.PROFILE_URL;
 
 const router = express.Router();
-const foodURL = `http://localhost:${FITNESS_PORT}/food`;
-const authURL = `http://localhost:${ACCOUNT_PORT}/auth`;
-let foodRequest;
-let foodResponse;
+let profileRequest;
+let profileResponse;
 
-/* Get Food by ID */
-router.get("/:foodId", async (request, response) => {
-    if (request.params.foodId) {
-        foodRequest = `${foodURL}/${request.params.foodId}`;
-        foodResponse = await fetch(foodRequest, {
-            method: "GET",
-        })
-        .then((res) => {
+/* Get Profile by UserID */
+router.get("/users", util.AuthTokenMiddleware, async (request, response) => {
+	let token = request.get("Authorization").split(" ")[1];
+	let userId = jwt.decode(token).userId;
+	profileRequest = `${PROFILE_URL}/users/${userId}`;
+	profileResponse = await fetch(profileRequest, {
+		method: "GET",
+	})
+		.then((res) => {
 			response.status(res.status);
 			return res.json();
 		})
 		.catch((err) => {
-			response.status(500).send({ message: err.message });
+			response.status(500).json({ message: err.message });
 		});
-    }
-    else {
-        return response.status(400).send({ message: "Bad Request"})
-    }
-    response.send(foodResponse);
+	response.send(profileResponse);
 });
 
-/* Get Food by Search, Barcode, or User ID */
-router.get("/", async (request, response) => {
-    if (request.query.search) {
-        foodRequest = `${foodURL}/?search=${request.query.search}`;
-    } else if (request.query.barcode) {
-        // We could authenticate?
-        foodRequest = `${foodURL}/?barcode=${request.query.barcode}`;
-    } else if (request.query.userId) {
-        // We will do user authentication to prevent client from making this request unless it is their own account
-        foodRequest = `${foodURL}/?userId=${request.query.userId}`;
-    }
-    else {
-        return response.status(400).send({ message: "Bad Request"})
-    }
-
-    foodResponse = await fetch(foodRequest, {
-        method: "GET",
-    })
-    .then((res) => {
-        response.status(res.status);
-        return res.json();
-    })
-    .catch((err) => {
-        response.status(500).send({ message: err.message });
-    });
-
-    response.send(foodResponse);
+/* Patch Profile by UserId */
+router.patch("/users", util.AuthTokenMiddleware, async (request, response) => {
+	let token = request.get("Authorization").split(" ")[1];
+	let userId = jwt.decode(token).userId;
+	profileRequest = `${PROFILE_URL}/users/${userId}`;
+	profileResponse = await fetch(profileRequest, {
+		method: "PATCH",
+		body: JSON.stringify(request.body),
+	})
+		.then((res) => {
+			response.status(res.status);
+			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).json({ message: err.message });
+		});
+	response.send(profileResponse);
 });
 
 module.exports = router;
