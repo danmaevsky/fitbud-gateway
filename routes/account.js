@@ -1,4 +1,5 @@
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 const util = require("../util");
 const express = require("express");
 const AUTH_URL = process.env.AUTH_URL;
@@ -19,13 +20,13 @@ router.post("/createAccount", async (request, response) => {
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ email: request.body.email, password: request.body.password }),
 	})
-	.then((res) => {
-		authStatus = res.status;
-		return res.json();
-	})
-	.catch((err) => {
-		response.status(500).send({ message: err.message });
-	});
+		.then((res) => {
+			authStatus = res.status;
+			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
+		});
 
 	let profileStatus;
 	profileRequest = `${PROFILE_URL}/createProfile`;
@@ -33,13 +34,14 @@ router.post("/createAccount", async (request, response) => {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ ...request.body, userId: authResponse.userId }),
-	}).then((res) => {
-		profileStatus = res.status;
-		return res.json();
 	})
-	.catch((err) => {
-		response.status(500).send({ message: err.message });
-	});
+		.then((res) => {
+			profileStatus = res.status;
+			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
+		});
 
 	if (authStatus !== 201) {
 		if (profileStatus !== 201) {
@@ -49,8 +51,7 @@ router.post("/createAccount", async (request, response) => {
 			await fetch(`${PROFILE_URL}/deleteProfile`, {
 				method: "DELETE",
 				body: { userId: profileResponse.userId },
-			})
-			.catch((err) => {
+			}).catch((err) => {
 				response.status(500).send({ message: err.message });
 			});
 			response.status(400).send({ message: "Account creation failed. Bad request." });
@@ -63,8 +64,7 @@ router.post("/createAccount", async (request, response) => {
 			await fetch(`${AUTH_URL}/deleteAccount`, {
 				method: "DELETE",
 				body: { userId: authResponse.userId },
-			})
-			.catch((err) => {
+			}).catch((err) => {
 				response.status(500).send({ message: err.message });
 			});
 			response.status(400).send({ message: "Account creation failed. Bad request." });
@@ -82,13 +82,13 @@ router.post("/login", async (request, response) => {
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(request.body),
 	})
-	.then((res) => {
-		response.status(res.status);
-		return res.json();
-	})
-	.catch((err) => {
-		response.status(500).send({ message: err.message });
-	});
+		.then((res) => {
+			response.status(res.status);
+			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
+		});
 
 	response.send(authResponse);
 });
@@ -100,13 +100,13 @@ router.post("/logout", util.AuthTokenMiddleware, async (request, response) => {
 		method: "POST",
 		headers: { Authorization: request.get("Authorization") },
 	})
-	.then((res) => {
-		response.status(res.status);
-		return res.json();
-	})
-	.catch((err) => {
-		response.status(500).send({ message: err.message });
-	});
+		.then((res) => {
+			response.status(res.status);
+			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
+		});
 
 	response.send(authResponse);
 });
@@ -119,13 +119,13 @@ router.post("/newToken", async (request, response) => {
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(request.body),
 	})
-	.then((res) => {
-		response.status(res.status);
-		return res.json();
-	})
-	.catch((err) => {
-		response.status(500).send({ message: err.message });
-	});
+		.then((res) => {
+			response.status(res.status);
+			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
+		});
 
 	response.send(authResponse);
 });
@@ -138,39 +138,42 @@ router.put("/changePassword", util.AuthTokenMiddleware, async (request, response
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(request.body),
 	})
-	.then((res) => {
-		response.status(res.status);
-		return res.json();
-	})
-	.catch((err) => {
-		response.status(500).send({ message: err.message });
-	});
+		.then((res) => {
+			response.status(res.status);
+			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
+		});
 
 	response.send(authResponse);
 });
 
 /* DELETE to Delete Account */
 router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, response) => {
+	let token = request.get("Authorization").split(" ")[1];
+	let userId = jwt.decode(token);
 	authRequest = `${AUTH_URL}/deleteAccount`;
 	authResponse = await fetch(authRequest, {
 		method: "DELETE",
 		headers: { Authorization: request.get("Authorization") },
 	})
-	.then((res) => {
-		response.status(res.status);
-		return res.json();
-	})
-	.catch((err) => {
-		response.status(500).send({ message: err.message });
-	});
+		.then((res) => {
+			response.status(res.status);
+			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).send({ message: err.message });
+		});
 
 	// call to Profile API
+	profileRequest = `${PROFILE_URL}/users/`;
 
 	// call to Food API
 
 	// call to Recipe API
 
-	//
+	// call to Workout API
 
 	response.send(authResponse);
 });
