@@ -43,35 +43,37 @@ router.post("/createAccount", async (request, response) => {
 			response.status(500).send({ message: err.message });
 		});
 
-	if (authStatus !== 201) {
-		if (profileStatus !== 201) {
-			response.status(400).send({ message: "Account creation failed. Bad request." });
-		} else {
-			// rollback changes done in Profile database
-			await fetch(`${PROFILE_URL}/deleteProfile`, {
-				method: "DELETE",
-				body: { userId: profileResponse.userId },
-			}).catch((err) => {
-				response.status(500).send({ message: err.message });
-			});
-			response.status(400).send({ message: "Account creation failed. Bad request." });
-		}
-	} else {
-		if (authStatus !== 201) {
-			response.status(400).send({ message: "Account creation failed. Bad request." });
-		} else {
-			// rollback changes done in Auth database
-			await fetch(`${AUTH_URL}/deleteAccount`, {
-				method: "DELETE",
-				body: { userId: authResponse.userId },
-			}).catch((err) => {
-				response.status(500).send({ message: err.message });
-			});
-			response.status(400).send({ message: "Account creation failed. Bad request." });
-		}
+	// if both calls failed
+	if (authStatus !== 201 && profileStatus !== 201) {
+		return response.status(400).send({ message: "Account creation failed. Bad request." });
 	}
 
-	response.send(authResponse);
+	// if only auth call failed
+	if (authStatus !== 201 && profileStatus === 201) {
+		// rollback changes done in Profile database
+		await fetch(`${PROFILE_URL}/deleteProfile`, {
+			method: "DELETE",
+			body: { userId: profileResponse.userId },
+		}).catch((err) => {
+			return response.status(500).send({ message: err.message });
+		});
+		return response.status(400).send({ message: "Account creation failed. Bad request." });
+	}
+
+	// if only profile call failed
+	if (authStatus === 201 && profileStatus !== 201) {
+		// rollback changes done in Auth database
+		await fetch(`${AUTH_URL}/deleteAccount`, {
+			method: "DELETE",
+			body: { userId: authResponse.userId },
+		}).catch((err) => {
+			return response.status(500).send({ message: err.message });
+		});
+		return response.status(400).send({ message: "Account creation failed. Bad request." });
+	}
+
+	// if everything was good, then send back authResponse which contains userId
+	response.status(201).send(authResponse);
 });
 
 /* Post User Login */
@@ -167,7 +169,10 @@ router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, respon
 		});
 
 	// call to Profile API
-	profileRequest = `${PROFILE_URL}/users/`;
+	profileRequest = `${PROFILE_URL}/users/${userId}`;
+	profileResponse = await fetch(profileRequest, {
+		method: "DELETE",
+	});
 
 	// call to Food API
 
