@@ -45,7 +45,7 @@ router.post("/createAccount", async (request, response) => {
 
 	// if both calls failed
 	if (authStatus !== 201 && profileStatus !== 201) {
-		return response.status(400).send({ message: "Account creation failed. Bad request." });
+		return response.status(400).send({ message: "Account creation failed. Bad request. (1)" });
 	}
 
 	// if only auth call failed
@@ -57,7 +57,7 @@ router.post("/createAccount", async (request, response) => {
 		}).catch((err) => {
 			return response.status(500).send({ message: err.message });
 		});
-		return response.status(400).send({ message: "Account creation failed. Bad request." });
+		return response.status(400).send({ message: "Account creation failed. Bad request. (2)" });
 	}
 
 	// if only profile call failed
@@ -69,7 +69,7 @@ router.post("/createAccount", async (request, response) => {
 		}).catch((err) => {
 			return response.status(500).send({ message: err.message });
 		});
-		return response.status(400).send({ message: "Account creation failed. Bad request." });
+		return response.status(400).send({ message: "Account creation failed. Bad request. (3)" });
 	}
 
 	// if everything was good, then send back authResponse which contains userId
