@@ -154,7 +154,7 @@ router.put("/changePassword", util.AuthTokenMiddleware, async (request, response
 /* DELETE to Delete Account */
 router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, response) => {
 	let token = request.get("Authorization").split(" ")[1];
-	let userId = jwt.decode(token);
+	let userId = jwt.decode(token).userId;
 	authRequest = `${AUTH_URL}/deleteAccount`;
 	authResponse = await fetch(authRequest, {
 		method: "DELETE",
