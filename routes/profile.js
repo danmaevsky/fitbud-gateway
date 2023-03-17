@@ -33,6 +33,7 @@ router.patch("/users", util.AuthTokenMiddleware, async (request, response) => {
 	profileRequest = `${PROFILE_URL}/users/${userId}`;
 	profileResponse = await fetch(profileRequest, {
 		method: "PATCH",
+		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(request.body),
 	})
 		.then((res) => {
