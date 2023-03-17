@@ -61,7 +61,7 @@ router.post("/createAccount", async (request, response) => {
 		await fetch(`${PROFILE_URL}/deleteProfile`, {
 			method: "DELETE",
 			headers: { "Content-Type": "application/json" },
-			body: { userId: profileResponse.userId },
+			body: JSON.stringify({ userId: profileResponse.userId }),
 		})
 			.then((res) => {
 				console.log(res.status === 200 ? "profile creation rolled back successfully" : "profile creation rollback failed...");
@@ -81,7 +81,7 @@ router.post("/createAccount", async (request, response) => {
 		await fetch(`${AUTH_URL}/rollback`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: { userId: authResponse.userId },
+			body: JSON.stringify({ userId: authResponse.userId }),
 		})
 			.then((res) => {
 				console.log(res.status === 200 ? "auth account creation rolled back successfully" : "auth account creation rollback failed...");
