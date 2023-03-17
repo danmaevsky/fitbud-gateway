@@ -10,12 +10,11 @@ app.use(
 	})
 );
 app.use((req, res, next) => {
-	console.log("~~~~~~~~~~~~~~~~~~~~");
+	console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 	console.log("Got Request!");
 	req.method ? console.log("Method:", req.method) : null;
 	req.originalUrl ? console.log("Original URL:", req.originalUrl) : null;
 	req.get("Authorization") ? console.log("Authorization:", req.get("Authorization")) : null;
-	console.log("~~~~~~~~~~~~~~~~~~~~");
 	next();
 });
 const GATEWAY_PORT = process.env.GATEWAY_PORT;

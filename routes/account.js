@@ -46,7 +46,9 @@ router.post("/createAccount", async (request, response) => {
 	// if both calls failed
 	if (authStatus !== 201 && profileStatus !== 201) {
 		console.log("authStatus:", authStatus);
+		console.log("Error from Auth:", authResponse.message);
 		console.log("profileStatus:", profileStatus);
+		console.log("Error from Profile:", profileResponse.message);
 		return response.status(400).send({ message: "Account creation failed. Bad request. (1)" });
 	}
 
