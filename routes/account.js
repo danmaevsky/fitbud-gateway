@@ -55,6 +55,8 @@ router.post("/createAccount", async (request, response) => {
 	// if only auth call failed
 	if (authStatus !== 201 && profileStatus === 201) {
 		// rollback changes done in Profile database
+		console.log("authStatus:", authStatus);
+		console.log("Error from Auth:", authResponse.message);
 		console.log("profile creation rolling back...");
 		await fetch(`${PROFILE_URL}/deleteProfile`, {
 			method: "DELETE",
@@ -72,9 +74,11 @@ router.post("/createAccount", async (request, response) => {
 	// if only profile call failed
 	if (authStatus === 201 && profileStatus !== 201) {
 		// rollback changes done in Auth database
+		console.log("profileStatus:", profileStatus);
+		console.log("Error from Profile:", profileResponse.message);
 		console.log("auth account creation rolling back...");
-		await fetch(`${AUTH_URL}/deleteAccount`, {
-			method: "DELETE",
+		await fetch(`${AUTH_URL}/rollback`, {
+			method: "POST",
 			body: { userId: authResponse.userId },
 		})
 			.then((res) => {
