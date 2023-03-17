@@ -45,34 +45,47 @@ router.post("/createAccount", async (request, response) => {
 
 	// if both calls failed
 	if (authStatus !== 201 && profileStatus !== 201) {
+		console.log("authStatus:", authStatus);
+		console.log("profileStatus:", profileStatus);
 		return response.status(400).send({ message: "Account creation failed. Bad request. (1)" });
 	}
 
 	// if only auth call failed
 	if (authStatus !== 201 && profileStatus === 201) {
 		// rollback changes done in Profile database
+		console.log("profile creation rolling back...");
 		await fetch(`${PROFILE_URL}/deleteProfile`, {
 			method: "DELETE",
 			body: { userId: profileResponse.userId },
-		}).catch((err) => {
-			return response.status(500).send({ message: err.message });
-		});
+		})
+			.then((res) => {
+				console.log(res.status === 200 ? "profile creation rolled back successfully" : "profile creation rollback failed...");
+			})
+			.catch((err) => {
+				return response.status(500).send({ message: err.message });
+			});
 		return response.status(400).send({ message: "Account creation failed. Bad request. (2)" });
 	}
 
 	// if only profile call failed
 	if (authStatus === 201 && profileStatus !== 201) {
 		// rollback changes done in Auth database
+		console.log("auth account creation rolling back...");
 		await fetch(`${AUTH_URL}/deleteAccount`, {
 			method: "DELETE",
 			body: { userId: authResponse.userId },
-		}).catch((err) => {
-			return response.status(500).send({ message: err.message });
-		});
+		})
+			.then((res) => {
+				console.log(res.status === 200 ? "auth account creation rolled back successfully" : "auth account creation rollback failed...");
+			})
+			.catch((err) => {
+				return response.status(500).send({ message: err.message });
+			});
 		return response.status(400).send({ message: "Account creation failed. Bad request. (3)" });
 	}
 
 	// if everything was good, then send back authResponse which contains userId
+	console.log("Account created successfully");
 	response.status(201).send(authResponse);
 });
 
