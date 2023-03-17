@@ -1,5 +1,5 @@
 require("dotenv").config();
-const validator = require('express-validator')
+const validator = require("express-validator");
 const cors = require("cors");
 const express = require("express");
 const app = express();
@@ -9,6 +9,14 @@ app.use(
 		origin: "*",
 	})
 );
+app.use((req, res, next) => {
+	console.log("~~~~~~~~~~~~~~~~~~~~");
+	console.log("Got Request!");
+	req.originalUrl ? console.log("		Original URL:", req.originalUrl) : null;
+	req.get("Authorization") ? console.log("	Authorization:", req.get("Authorization")) : null;
+	console.log("~~~~~~~~~~~~~~~~~~~~");
+	next();
+});
 const GATEWAY_PORT = process.env.GATEWAY_PORT;
 
 // Routes

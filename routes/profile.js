@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const util = require("../util");
 const PROFILE_URL = process.env.PROFILE_URL;
 
