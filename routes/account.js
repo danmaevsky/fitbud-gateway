@@ -60,6 +60,7 @@ router.post("/createAccount", async (request, response) => {
 		console.log("profile creation rolling back...");
 		await fetch(`${PROFILE_URL}/deleteProfile`, {
 			method: "DELETE",
+			headers: { "Content-Type": "application/json" },
 			body: { userId: profileResponse.userId },
 		})
 			.then((res) => {
@@ -79,6 +80,7 @@ router.post("/createAccount", async (request, response) => {
 		console.log("auth account creation rolling back...");
 		await fetch(`${AUTH_URL}/rollback`, {
 			method: "POST",
+			headers: { "Content-Type": "application/json" },
 			body: { userId: authResponse.userId },
 		})
 			.then((res) => {
