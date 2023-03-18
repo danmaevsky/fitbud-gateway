@@ -23,6 +23,8 @@ router.get("/users", util.AuthTokenMiddleware, async (request, response) => {
 		.catch((err) => {
 			response.status(500).json({ message: err.message });
 		});
+	console.log("Response from Profile API:", profileResponse);
+	console.log("Message from Profile:", profileResponse ? profileResponse.message : profileResponse);
 	response.send(profileResponse);
 });
 
@@ -43,6 +45,8 @@ router.patch("/users", util.AuthTokenMiddleware, async (request, response) => {
 		.catch((err) => {
 			response.status(500).json({ message: err.message });
 		});
+	console.log("Response from Profile API:", profileResponse);
+	console.log("Message from Profile:", profileResponse ? profileResponse.message : profileResponse);
 	response.send(profileResponse);
 });
 

@@ -10,9 +10,11 @@ module.exports.AuthTokenMiddleware = async function AuthTokenMiddleware(request,
 	});
 	let status = authResponse.status;
 	if (status === 200) {
+		console.log("Authentication successful");
 		return next();
 	} else {
 		let message = await authResponse.json();
+		console.log(message.message);
 		response.status(status).send(message);
 	}
 };

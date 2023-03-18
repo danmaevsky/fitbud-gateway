@@ -27,6 +27,7 @@ router.post("/createAccount", async (request, response) => {
 		.catch((err) => {
 			response.status(500).send({ message: err.message });
 		});
+	console.log("Response from Auth API:", authResponse);
 
 	let profileStatus;
 	profileRequest = `${PROFILE_URL}/createProfile`;
@@ -42,21 +43,21 @@ router.post("/createAccount", async (request, response) => {
 		.catch((err) => {
 			response.status(500).send({ message: err.message });
 		});
+	console.log("Response from Profile API:", profileResponse);
 
+	console.log("authStatus:", authStatus);
+	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
+	console.log("profileStatus:", profileStatus);
+	console.log("Message from Profile:", profileResponse ? profileResponse.message : profileResponse);
 	// if both calls failed
 	if (authStatus !== 201 && profileStatus !== 201) {
-		console.log("authStatus:", authStatus);
-		console.log("Error from Auth:", authResponse.message);
-		console.log("profileStatus:", profileStatus);
-		console.log("Error from Profile:", profileResponse.message);
+		console.log("Account creation failed.");
 		return response.status(400).send({ message: "Account creation failed. Bad request. (1)" });
 	}
 
 	// if only auth call failed
 	if (authStatus !== 201 && profileStatus === 201) {
 		// rollback changes done in Profile database
-		console.log("authStatus:", authStatus);
-		console.log("Error from Auth:", authResponse.message);
 		console.log("profile creation rolling back...");
 		await fetch(`${PROFILE_URL}/deleteProfile`, {
 			method: "DELETE",
@@ -75,8 +76,6 @@ router.post("/createAccount", async (request, response) => {
 	// if only profile call failed
 	if (authStatus === 201 && profileStatus !== 201) {
 		// rollback changes done in Auth database
-		console.log("profileStatus:", profileStatus);
-		console.log("Error from Profile:", profileResponse.message);
 		console.log("auth account creation rolling back...");
 		await fetch(`${AUTH_URL}/rollback`, {
 			method: "POST",
@@ -110,8 +109,11 @@ router.post("/login", async (request, response) => {
 			return res.json();
 		})
 		.catch((err) => {
+			console.log("Internal Error in 'POST /login':", err);
 			response.status(500).send({ message: err.message });
 		});
+	console.log("Response from Auth API:", authResponse);
+	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
 
 	response.send(authResponse);
 });
@@ -128,8 +130,11 @@ router.post("/logout", util.AuthTokenMiddleware, async (request, response) => {
 			return res.json();
 		})
 		.catch((err) => {
+			console.log("Internal Error in 'POST /logout':", err);
 			response.status(500).send({ message: err.message });
 		});
+	console.log("Response from Auth API:", authResponse);
+	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
 
 	response.send(authResponse);
 });
@@ -147,9 +152,11 @@ router.post("/newToken", async (request, response) => {
 			return res.json();
 		})
 		.catch((err) => {
+			console.log("Internal Error in 'POST /newToken':", err);
 			response.status(500).send({ message: err.message });
 		});
-
+	console.log("Response from Auth API:", authResponse);
+	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
 	response.send(authResponse);
 });
 
@@ -168,7 +175,8 @@ router.put("/changePassword", util.AuthTokenMiddleware, async (request, response
 		.catch((err) => {
 			response.status(500).send({ message: err.message });
 		});
-
+	console.log("Response from Auth API:", authResponse);
+	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
 	response.send(authResponse);
 });
 

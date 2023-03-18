@@ -19,18 +19,18 @@ router.get("/:foodId", async (request, response) => {
 		foodResponse = await fetch(foodRequest, {
 			method: "GET",
 		})
-		.then((res) => {
-			response.status(res.status);
-			return res.json();
-		})
-		.catch((err) => {
-			response.status(500).json({ message: err.message });
-		});
+			.then((res) => {
+				response.status(res.status);
+				return res.json();
+			})
+			.catch((err) => {
+				response.status(500).json({ message: err.message });
+			});
+	} else {
+		return response.status(400).send({ message: "Bad Request" });
 	}
-	else {
-        return response.status(400).send({ message: "Bad Request"})
-    }
-
+	console.log("Response from Fitness API:", foodResponse);
+	console.log("Message from Fitness:", foodResponse ? foodResponse.message : foodResponse);
 	response.send(foodResponse);
 });
 
@@ -47,7 +47,6 @@ router.get("/", async (request, response) => {
 		}
 		*/
 		foodRequest = `${foodURL}/?barcode=${request.query.barcode}`;
-
 	} else if (request.query.userId) {
 		// We will do user authentication to prevent client from making this request unless it is their own account
 		if ((await util.AuthenticateToken(request, response)) !== 200) {
@@ -57,29 +56,30 @@ router.get("/", async (request, response) => {
 		let token = request.get("Authorization").split(" ")[1];
 		let userId = jwt.decode(token).userId;
 		if (!userId || userId !== request.query.userId) {
+			console.log(`userId in accessToken (${userId}) does not match userId in query parameters (${request.query.userId})`);
 			return response.status(401).send({
 				message: "Authentication failed. Credentials do not match query parameter 'userId'. Identity theft is pretty bad you know...",
 			});
 		}
 
 		foodRequest = `${foodURL}/?userId=${request.query.userId}`;
-
+	} else {
+		console.log("Bad Request");
+		return response.status(400).send({ message: "Bad Request" });
 	}
-	else {
-        return response.status(400).send({ message: "Bad Request"})
-    }
 
 	foodResponse = await fetch(foodRequest, {
 		method: "GET",
 	})
-	.then((res) => {
-		response.status(res.status);
-		return res.json();
-	})
-	.catch((err) => {
-		response.status(500).json({ message: err.message });
-	});
-
+		.then((res) => {
+			response.status(res.status);
+			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).json({ message: err.message });
+		});
+	console.log("Response from Fitness API:", foodResponse);
+	console.log("Message from Fitness:", foodResponse ? foodResponse.message : foodResponse);
 	response.send(foodResponse);
 });
 
@@ -88,6 +88,7 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 	// Authentication must happen!!
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
+	console.log("userId:", userId);
 	foodRequest = foodURL;
 	let foodRequestBody = {
 		userId: userId,
@@ -98,14 +99,15 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(foodRequestBody),
 	})
-	.then((res) => {
-		response.status(res.status);
-		return res.json();
-	})
-	.catch((err) => {
-		response.status(500).json({ message: err.message });
-	});
-
+		.then((res) => {
+			response.status(res.status);
+			return res.json();
+		})
+		.catch((err) => {
+			response.status(500).json({ message: err.message });
+		});
+	console.log("Response from Fitness API:", foodResponse);
+	console.log("Message from Fitness:", foodResponse ? foodResponse.message : foodResponse);
 	response.send(foodResponse);
 });
 
