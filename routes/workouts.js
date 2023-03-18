@@ -24,8 +24,6 @@ router.get("/", util.AuthTokenMiddleware, async (request, response) => {
 		.catch((err) => {
 			response.status(500).send({ message: err.message });
 		});
-	console.log("Response from Fitness API:", fitnessResponse);
-	console.log("Message from Fitness:", fitnessResponse ? fitnessResponse.message : fitnessResponse);
 	response.send(fitnessResponse);
 });
 
@@ -49,8 +47,7 @@ router.get("/:workoutId", util.AuthTokenMiddleware, async (request, response) =>
 		console.log(`userId in accessToken (${userId}) does not match userId in query parameters (${request.query.userId})`);
 		response.status(401).send({ message: "Not permitted to view workouts that do not belong to you!" });
 	}
-	console.log("Response from Fitness API:", fitnessResponse);
-	console.log("Message from Fitness:", fitnessResponse ? fitnessResponse.message : fitnessResponse);
+
 	response.send(fitnessResponse);
 });
 
@@ -77,8 +74,6 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 		.catch((err) => {
 			response.status(500).send({ message: err.message });
 		});
-	console.log("Response from Fitness API:", fitnessResponse);
-	console.log("Message from Fitness:", fitnessResponse ? fitnessResponse.message : fitnessResponse);
 	response.send(fitnessResponse);
 });
 
@@ -110,8 +105,6 @@ router.patch("/:workoutId", util.AuthTokenMiddleware, async (request, response) 
 		console.log("Bad Request");
 		return response.status(400).send({ message: "Bad Request" });
 	}
-	console.log("Response from Fitness API:", fitnessResponse);
-	console.log("Message from Fitness:", fitnessResponse ? fitnessResponse.message : fitnessResponse);
 	response.send(fitnessResponse);
 });
 
@@ -137,8 +130,6 @@ router.delete("/:workoutId", util.AuthTokenMiddleware, async (request, response)
 		console.log("Bad Request");
 		return response.status(400).send({ message: "Bad Request" });
 	}
-	console.log("Response from Fitness API:", fitnessResponse);
-	console.log("Message from Fitness:", fitnessResponse ? fitnessResponse.message : fitnessResponse);
 	response.send(fitnessResponse);
 });
 

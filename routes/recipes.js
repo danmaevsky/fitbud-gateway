@@ -35,8 +35,6 @@ router.get("/:recipeId", util.AuthTokenMiddleware, async (request, response) => 
 		console.log(`userId in accessToken (${userId}) does not match userId in query parameters (${request.query.userId})`);
 		response.status(401).send({ message: "Not permitted to view recipes that do not belong to you!" });
 	}
-	console.log("Response from Fitness API:", recipesResponse);
-	console.log("Message from Fitness:", recipesResponse ? recipesResponse.message : recipesResponse);
 	response.send(recipesResponse);
 });
 
@@ -70,8 +68,6 @@ router.get("/", util.AuthTokenMiddleware, async (request, response) => {
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
-	console.log("Response from Fitness API:", recipesResponse);
-	console.log("Message from Fitness:", recipesResponse ? recipesResponse.message : recipesResponse);
 	response.send(recipesResponse);
 });
 
@@ -96,8 +92,6 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 		.catch((err) => {
 			response.status(500).send({ message: err.message });
 		});
-	console.log("Response from Fitness API:", recipesResponse);
-	console.log("Message from Fitness:", recipesResponse ? recipesResponse.message : recipesResponse);
 	response.send(recipesResponse);
 });
 
@@ -126,8 +120,6 @@ router.patch("/:recipeId", util.AuthTokenMiddleware, async (request, response) =
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
-	console.log("Response from Fitness API:", recipesResponse);
-	console.log("Message from Fitness:", recipesResponse ? recipesResponse.message : recipesResponse);
 	response.send(recipesResponse);
 });
 
@@ -151,8 +143,6 @@ router.delete("/:recipeId", util.AuthTokenMiddleware, async (request, response) 
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
-	console.log("Response from Fitness API:", recipesResponse);
-	console.log("Message from Fitness:", recipesResponse ? recipesResponse.message : recipesResponse);
 	response.send(recipesResponse);
 });
 

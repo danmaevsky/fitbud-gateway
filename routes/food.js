@@ -29,8 +29,6 @@ router.get("/:foodId", async (request, response) => {
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
-	console.log("Response from Fitness API:", foodResponse);
-	console.log("Message from Fitness:", foodResponse ? foodResponse.message : foodResponse);
 	response.send(foodResponse);
 });
 
@@ -78,8 +76,6 @@ router.get("/", async (request, response) => {
 		.catch((err) => {
 			response.status(500).json({ message: err.message });
 		});
-	console.log("Response from Fitness API:", foodResponse);
-	console.log("Message from Fitness:", foodResponse ? foodResponse.message : foodResponse);
 	response.send(foodResponse);
 });
 
@@ -106,8 +102,6 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 		.catch((err) => {
 			response.status(500).json({ message: err.message });
 		});
-	console.log("Response from Fitness API:", foodResponse);
-	console.log("Message from Fitness:", foodResponse ? foodResponse.message : foodResponse);
 	response.send(foodResponse);
 });
 

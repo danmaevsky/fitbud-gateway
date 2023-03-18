@@ -24,8 +24,6 @@ router.get("/:exerciseId", async (request, response) => {
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
-	console.log("Response from Fitness API:", fitnessResponse);
-	console.log("Message from Fitness:", fitnessResponse ? fitnessResponse.message : fitnessResponse);
 	response.send(fitnessResponse);
 });
 
@@ -46,8 +44,6 @@ router.get("/", async (request, response) => {
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
-	console.log("Response from Fitness API:", fitnessResponse);
-	console.log("Message from Fitness:", fitnessResponse ? fitnessResponse.message : fitnessResponse);
 	response.send(fitnessResponse);
 });
 
