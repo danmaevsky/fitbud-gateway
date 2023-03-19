@@ -2,12 +2,11 @@ require("dotenv").config();
 const express = require("express");
 const jwt = require("jsonwebtoken");
 
-const FITNESS_URL = process.env.FITNESS_URL;
 const PROFILE_URL = process.env.PROFILE_URL;
 
 const util = require("../util");
 const router = express.Router();
-const diaryURL = `${FITNESS_URL}/diary`;
+const diaryURL = `${PROFILE_URL}/diary`;
 let diaryRequest;
 let diaryResponse;
 
