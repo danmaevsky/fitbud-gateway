@@ -17,10 +17,12 @@ router.get("/users", util.AuthTokenMiddleware, async (request, response) => {
 		method: "GET",
 	})
 		.then((res) => {
+			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
 		})
 		.catch((err) => {
+			console.log("Caught Error in Gateway:", err.message);
 			response.status(500).json({ message: err.message });
 		});
 	console.log("Response from Profile API:", profileResponse);
@@ -39,10 +41,12 @@ router.patch("/users", util.AuthTokenMiddleware, async (request, response) => {
 		body: JSON.stringify(request.body),
 	})
 		.then((res) => {
+			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
 		})
 		.catch((err) => {
+			console.log("Caught Error in Gateway:", err.message);
 			response.status(500).json({ message: err.message });
 		});
 	console.log("Response from Profile API:", profileResponse);

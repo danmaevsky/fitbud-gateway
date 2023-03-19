@@ -19,10 +19,12 @@ router.get("/:recipeId", util.AuthTokenMiddleware, async (request, response) => 
 			method: "GET",
 		})
 			.then((res) => {
+				console.log("Recipe Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
 			})
 			.catch((err) => {
+				console.log("Caught Error in Gateway:", err.message);
 				response.status(500).send({ message: err.message });
 			});
 	} else {
@@ -59,10 +61,12 @@ router.get("/", util.AuthTokenMiddleware, async (request, response) => {
 			method: "GET",
 		})
 			.then((res) => {
+				console.log("Recipe Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
 			})
 			.catch((err) => {
+				console.log("Caught Error in Gateway:", err.message);
 				response.status(500).send({ message: err.message });
 			});
 	} else {
@@ -86,10 +90,12 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 		body: JSON.stringify(recipesRequestBody),
 	})
 		.then((res) => {
+			console.log("Recipe Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
 		})
 		.catch((err) => {
+			console.log("Caught Error in Gateway:", err.message);
 			response.status(500).send({ message: err.message });
 		});
 	response.send(recipesResponse);
@@ -111,10 +117,12 @@ router.patch("/:recipeId", util.AuthTokenMiddleware, async (request, response) =
 			body: JSON.stringify(recipesRequestBody),
 		})
 			.then((res) => {
+				console.log("Recipe Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
 			})
 			.catch((err) => {
+				console.log("Caught Error in Gateway:", err.message);
 				response.status(500).send({ message: err.message });
 			});
 	} else {
@@ -134,10 +142,12 @@ router.delete("/:recipeId", util.AuthTokenMiddleware, async (request, response) 
 			body: JSON.stringify({ userId: userId }),
 		})
 			.then((res) => {
+				console.log("Recipe Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
 			})
 			.catch((err) => {
+				console.log("Caught Error in Gateway:", err.message);
 				response.status(500).send({ message: err.message });
 			});
 	} else {

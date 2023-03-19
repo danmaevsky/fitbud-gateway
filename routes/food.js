@@ -20,10 +20,12 @@ router.get("/:foodId", async (request, response) => {
 			method: "GET",
 		})
 			.then((res) => {
+				console.log("Food Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
 			})
 			.catch((err) => {
+				console.log("Caught Error in Gateway:", err.message);
 				response.status(500).json({ message: err.message });
 			});
 	} else {
@@ -70,10 +72,12 @@ router.get("/", async (request, response) => {
 		method: "GET",
 	})
 		.then((res) => {
+			console.log("Food Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
 		})
 		.catch((err) => {
+			console.log("Caught Error in Gateway:", err.message);
 			response.status(500).json({ message: err.message });
 		});
 	response.send(foodResponse);
@@ -96,10 +100,12 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 		body: JSON.stringify(foodRequestBody),
 	})
 		.then((res) => {
+			console.log("Food Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
 		})
 		.catch((err) => {
+			console.log("Caught Error in Gateway:", err.message);
 			response.status(500).json({ message: err.message });
 		});
 	response.send(foodResponse);

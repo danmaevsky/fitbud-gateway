@@ -22,10 +22,12 @@ router.post("/createAccount", async (request, response) => {
 		body: JSON.stringify({ email: request.body.email, password: request.body.password }),
 	})
 		.then((res) => {
+			console.log("Auth Response Status:", res.status);
 			authStatus = res.status;
 			return res.json();
 		})
 		.catch((err) => {
+			console.log("Caught Error in Gateway:", err.message);
 			response.status(500).send({ message: err.message });
 		});
 	console.log("Response from Auth API:", authResponse);
@@ -38,10 +40,12 @@ router.post("/createAccount", async (request, response) => {
 		body: JSON.stringify({ ...request.body, userId: authResponse.userId }),
 	})
 		.then((res) => {
+			console.log("Profile Response Status:", res.status);
 			profileStatus = res.status;
 			return res.json();
 		})
 		.catch((err) => {
+			console.log("Caught Error in Gateway:", err.message);
 			response.status(500).send({ message: err.message });
 		});
 	console.log("Response from Profile API:", profileResponse);
@@ -69,6 +73,7 @@ router.post("/createAccount", async (request, response) => {
 				console.log(res.status === 200 ? "profile creation rolled back successfully" : "profile creation rollback failed...");
 			})
 			.catch((err) => {
+				console.log("Caught Error in Gateway:", err.message);
 				return response.status(500).send({ message: err.message });
 			});
 		return response.status(400).send({ message: "Account creation failed. Bad request. (2)" });
@@ -87,6 +92,7 @@ router.post("/createAccount", async (request, response) => {
 				console.log(res.status === 200 ? "auth account creation rolled back successfully" : "auth account creation rollback failed...");
 			})
 			.catch((err) => {
+				console.log("Caught Error in Gateway:", err.message);
 				return response.status(500).send({ message: err.message });
 			});
 		return response.status(400).send({ message: "Account creation failed. Bad request. (3)" });
@@ -106,11 +112,12 @@ router.post("/login", async (request, response) => {
 		body: JSON.stringify(request.body),
 	})
 		.then((res) => {
+			console.log("Auth Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
 		})
 		.catch((err) => {
-			console.log("Internal Error in 'POST /login':", err);
+			console.log("Caught Error in Gateway:", err.message);
 			response.status(500).send({ message: err.message });
 		});
 	console.log("Response from Auth API:", authResponse);
@@ -127,11 +134,12 @@ router.post("/logout", util.AuthTokenMiddleware, async (request, response) => {
 		headers: { Authorization: request.get("Authorization") },
 	})
 		.then((res) => {
+			console.log("Auth Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
 		})
 		.catch((err) => {
-			console.log("Internal Error in 'POST /logout':", err);
+			console.log("Caught Error in Gateway:", err.message);
 			response.status(500).send({ message: err.message });
 		});
 	console.log("Response from Auth API:", authResponse);
@@ -149,11 +157,12 @@ router.post("/newToken", async (request, response) => {
 		body: JSON.stringify(request.body),
 	})
 		.then((res) => {
+			console.log("Auth Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
 		})
 		.catch((err) => {
-			console.log("Internal Error in 'POST /newToken':", err);
+			console.log("Caught Error in Gateway:", err.message);
 			response.status(500).send({ message: err.message });
 		});
 	console.log("Response from Auth API:", authResponse);
@@ -170,10 +179,12 @@ router.put("/changePassword", util.AuthTokenMiddleware, async (request, response
 		body: JSON.stringify(request.body),
 	})
 		.then((res) => {
+			console.log("Auth Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
 		})
 		.catch((err) => {
+			console.log("Caught Error in Gateway:", err.message);
 			response.status(500).send({ message: err.message });
 		});
 	console.log("Response from Auth API:", authResponse);
@@ -211,10 +222,12 @@ router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, respon
 		headers: { Authorization: request.get("Authorization") },
 	})
 		.then((res) => {
+			console.log("Auth Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
 		})
 		.catch((err) => {
+			console.log("Caught Error in Gateway:", err.message);
 			response.status(500).send({ message: err.message });
 		});
 

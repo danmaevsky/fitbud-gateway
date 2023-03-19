@@ -15,10 +15,12 @@ router.get("/:exerciseId", async (request, response) => {
 			method: "GET",
 		})
 			.then((res) => {
+				console.log("Cardio Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
 			})
 			.catch((err) => {
+				console.log("Caught Error in Gateway:", err.message);
 				response.status(500).send({ message: err.message });
 			});
 	} else {
@@ -35,10 +37,12 @@ router.get("/", async (request, response) => {
 			method: "GET",
 		})
 			.then((res) => {
+				console.log("Cardio Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
 			})
 			.catch((err) => {
+				console.log("Caught Error in Gateway:", err.message);
 				response.status(500).send({ message: err.message });
 			});
 	} else {
