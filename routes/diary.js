@@ -108,7 +108,7 @@ router.patch("/", util.AuthTokenMiddleware, async (request, response) => {
 		return response.status(400).send({ message: "Bad Request" });
 	}
 
-	response.send(diaryResponse);
+	return response.send(diaryResponse);
 });
 
 module.exports = router;
