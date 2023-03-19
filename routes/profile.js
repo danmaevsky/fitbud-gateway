@@ -13,18 +13,18 @@ router.get("/users", util.AuthTokenMiddleware, async (request, response) => {
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 	profileRequest = `${PROFILE_URL}/users/${userId}`;
-	profileResponse = await fetch(profileRequest, {
-		method: "GET",
-	})
-		.then((res) => {
+	try {
+		profileResponse = await fetch(profileRequest, {
+			method: "GET",
+		}).then((res) => {
 			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).json({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 	console.log("Response from Profile API:", profileResponse);
 	console.log("Message from Profile:", profileResponse ? profileResponse.message : profileResponse);
 	response.send(profileResponse);
@@ -35,20 +35,20 @@ router.patch("/users", util.AuthTokenMiddleware, async (request, response) => {
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 	profileRequest = `${PROFILE_URL}/users/${userId}`;
-	profileResponse = await fetch(profileRequest, {
-		method: "PATCH",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(request.body),
-	})
-		.then((res) => {
+	try {
+		profileResponse = await fetch(profileRequest, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(request.body),
+		}).then((res) => {
 			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).json({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 	console.log("Response from Profile API:", profileResponse);
 	console.log("Message from Profile:", profileResponse ? profileResponse.message : profileResponse);
 	response.send(profileResponse);
