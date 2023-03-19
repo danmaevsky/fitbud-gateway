@@ -63,7 +63,7 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 
         diaryRequest = `${diaryURL}/?date=${request.query.date}`;
         diaryResponse = await fetch(diaryRequest, {
-			method: "PATCH",
+			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(diaryRequestBody),
 		})
@@ -84,6 +84,6 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 
 })
 
-router.patch()
+
 
 module.exports = router;
