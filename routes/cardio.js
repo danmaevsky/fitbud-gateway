@@ -11,18 +11,18 @@ let fitnessResponse;
 router.get("/:exerciseId", async (request, response) => {
 	if (request.params.exerciseId) {
 		fitnessRequest = `${fitnessURL}/${request.params.exerciseId}`;
-		fitnessResponse = await fetch(fitnessRequest, {
-			method: "GET",
-		})
-			.then((res) => {
+		try {
+			fitnessResponse = await fetch(fitnessRequest, {
+				method: "GET",
+			}).then((res) => {
 				console.log("Cardio Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				response.status(500).send({ message: err.message });
 			});
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
@@ -33,18 +33,18 @@ router.get("/:exerciseId", async (request, response) => {
 router.get("/", async (request, response) => {
 	if (request.query.search) {
 		fitnessRequest = `${fitnessURL}/?search=${request.query.search}`;
-		fitnessResponse = await fetch(fitnessRequest, {
-			method: "GET",
-		})
-			.then((res) => {
+		try {
+			fitnessResponse = await fetch(fitnessRequest, {
+				method: "GET",
+			}).then((res) => {
 				console.log("Cardio Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				response.status(500).send({ message: err.message });
 			});
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
