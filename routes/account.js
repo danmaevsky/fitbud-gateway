@@ -16,38 +16,38 @@ let profileResponse;
 router.post("/createAccount", async (request, response) => {
 	let authStatus;
 	authRequest = `${AUTH_URL}/createAccount`;
-	authResponse = await fetch(authRequest, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ email: request.body.email, password: request.body.password }),
-	})
-		.then((res) => {
+	try {
+		authResponse = await fetch(authRequest, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email: request.body.email, password: request.body.password }),
+		}).then((res) => {
 			console.log("Auth Response Status:", res.status);
 			authStatus = res.status;
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).send({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 	console.log("Response from Auth API:", authResponse);
 
 	let profileStatus;
 	profileRequest = `${PROFILE_URL}/createProfile`;
-	profileResponse = await fetch(profileRequest, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ ...request.body, userId: authResponse.userId }),
-	})
-		.then((res) => {
+	try {
+		profileResponse = await fetch(profileRequest, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ ...request.body, userId: authResponse.userId }),
+		}).then((res) => {
 			console.log("Profile Response Status:", res.status);
 			profileStatus = res.status;
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).send({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 	console.log("Response from Profile API:", profileResponse);
 
 	console.log("authStatus:", authStatus);
@@ -56,46 +56,48 @@ router.post("/createAccount", async (request, response) => {
 	console.log("Message from Profile:", profileResponse ? profileResponse.message : profileResponse);
 	// if both calls failed
 	if (authStatus !== 201 && profileStatus !== 201) {
-		console.log("Account creation failed.");
-		return response.status(400).send({ message: "Account creation failed. Bad request. (1)" });
+		console.log("Account creation failed. (1)");
+		return response.status(400).send({ message: "Account creation failed. Bad request." });
 	}
 
 	// if only auth call failed
 	if (authStatus !== 201 && profileStatus === 201) {
 		// rollback changes done in Profile database
 		console.log("profile creation rolling back...");
-		await fetch(`${PROFILE_URL}/deleteProfile`, {
-			method: "DELETE",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ userId: profileResponse.userId }),
-		})
-			.then((res) => {
+		try {
+			await fetch(`${PROFILE_URL}/deleteProfile`, {
+				method: "DELETE",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ userId: profileResponse.userId }),
+			}).then((res) => {
 				console.log(res.status === 200 ? "profile creation rolled back successfully" : "profile creation rollback failed...");
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				return response.status(500).send({ message: err.message });
 			});
-		return response.status(400).send({ message: "Account creation failed. Bad request. (2)" });
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
+		console.log("Account creation failed. (2)");
+		return response.status(400).send({ message: "Account creation failed. Bad request." });
 	}
 
 	// if only profile call failed
 	if (authStatus === 201 && profileStatus !== 201) {
 		// rollback changes done in Auth database
 		console.log("auth account creation rolling back...");
-		await fetch(`${AUTH_URL}/rollback`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ userId: authResponse.userId }),
-		})
-			.then((res) => {
+		try {
+			await fetch(`${AUTH_URL}/rollback`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ userId: authResponse.userId }),
+			}).then((res) => {
 				console.log(res.status === 200 ? "auth account creation rolled back successfully" : "auth account creation rollback failed...");
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				return response.status(500).send({ message: err.message });
 			});
-		return response.status(400).send({ message: "Account creation failed. Bad request. (3)" });
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
+		console.log("Account creation failed. (3)");
+		return response.status(400).send({ message: "Account creation failed. Bad request." });
 	}
 
 	// if everything was good, then send back authResponse which contains userId
@@ -106,20 +108,20 @@ router.post("/createAccount", async (request, response) => {
 /* Post User Login */
 router.post("/login", async (request, response) => {
 	authRequest = `${AUTH_URL}/login`;
-	authResponse = await fetch(authRequest, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(request.body),
-	})
-		.then((res) => {
+	try {
+		authResponse = await fetch(authRequest, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(request.body),
+		}).then((res) => {
 			console.log("Auth Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).send({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 	console.log("Response from Auth API:", authResponse);
 	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
 
@@ -129,19 +131,19 @@ router.post("/login", async (request, response) => {
 /* Post User Logout */
 router.post("/logout", util.AuthTokenMiddleware, async (request, response) => {
 	authRequest = `${AUTH_URL}/logout`;
-	authResponse = await fetch(authRequest, {
-		method: "POST",
-		headers: { Authorization: request.get("Authorization") },
-	})
-		.then((res) => {
+	try {
+		authResponse = await fetch(authRequest, {
+			method: "POST",
+			headers: { Authorization: request.get("Authorization") },
+		}).then((res) => {
 			console.log("Auth Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).send({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 	console.log("Response from Auth API:", authResponse);
 	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
 
@@ -151,20 +153,20 @@ router.post("/logout", util.AuthTokenMiddleware, async (request, response) => {
 /* POST a new access token given a refresh token */
 router.post("/newToken", async (request, response) => {
 	authRequest = `${AUTH_URL}/newToken`;
-	authResponse = await fetch(authRequest, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(request.body),
-	})
-		.then((res) => {
+	try {
+		authResponse = await fetch(authRequest, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(request.body),
+		}).then((res) => {
 			console.log("Auth Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).send({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 	console.log("Response from Auth API:", authResponse);
 	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
 	response.send(authResponse);
@@ -173,20 +175,20 @@ router.post("/newToken", async (request, response) => {
 /* Put to Change Password */
 router.put("/changePassword", util.AuthTokenMiddleware, async (request, response) => {
 	authRequest = `${AUTH_URL}/changePassword`;
-	authResponse = await fetch(authRequest, {
-		method: "PUT",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(request.body),
-	})
-		.then((res) => {
+	try {
+		authResponse = await fetch(authRequest, {
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(request.body),
+		}).then((res) => {
 			console.log("Auth Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).send({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 	console.log("Response from Auth API:", authResponse);
 	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
 	response.send(authResponse);
@@ -217,19 +219,19 @@ router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, respon
 	}
 
 	authRequest = `${AUTH_URL}/deleteAccount`;
-	authResponse = await fetch(authRequest, {
-		method: "DELETE",
-		headers: { Authorization: request.get("Authorization") },
-	})
-		.then((res) => {
+	try {
+		authResponse = await fetch(authRequest, {
+			method: "DELETE",
+			headers: { Authorization: request.get("Authorization") },
+		}).then((res) => {
 			console.log("Auth Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).send({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 
 	// call to Profile API
 	profileRequest = `${PROFILE_URL}/users/${userId}`;
