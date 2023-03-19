@@ -1,5 +1,7 @@
 require("dotenv").config();
 const express = require("express");
+const jwt = require("jsonwebtoken");
+
 const FITNESS_URL = process.env.FITNESS_URL;
 const PROFILE_URL = process.env.PROFILE_URL;
 
@@ -81,5 +83,7 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
     response.send(diaryResponse)
 
 })
+
+router.patch()
 
 module.exports = router;
