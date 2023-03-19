@@ -10,7 +10,7 @@ const diaryURL = `${PROFILE_URL}/diary`;
 let diaryRequest;
 let diaryResponse;
 
-/* Get Diary by */
+/* Get Diary by ID */
 
 router.get("/:diaryId", util.AuthTokenMiddleware, async (request, response) => {
 	if (request.params.diaryId) {
@@ -21,21 +21,53 @@ router.get("/:diaryId", util.AuthTokenMiddleware, async (request, response) => {
 		return response.status(400).send({ message: "Bad Request" });
 	}
 
-	diaryResponse = await fetch(diaryRequest, {
-		method: "GET",
-	})
-		.then((res) => {
+	try {
+		diaryResponse = await fetch(diaryRequest, {
+			method: "GET",
+		}).then((res) => {
 			console.log("Diary Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			return response.status(500).send({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
+
+	if (userId !== diaryResponse.userId) {
+		console.log(`userId in accessToken (${userId}) does not match userId in response (${diaryResponse.userId})`);
+		return response.status(401).send({ message: "Not permitted to view diaries that do not belong to you!" });
+	}
+
+	return response.send(diaryResponse);
+});
+
+/* Get Diary by Query Parameters "userId" and "date" */
+router.get("/", util.AuthTokenMiddleware, async (request, response) => {
+	let token = request.get("Authorization").split(" ")[1];
+	let userId = jwt.decode(token).userId;
+
+	if (request.query.date) {
+		diaryRequest = `${diaryURL}/?userId=${userId}&date=${request.query.date}`;
+	} else {
+		return response.status(400).send({ message: "Bad Request" });
+	}
+
+	try {
+		diaryResponse = await fetch(diaryRequest, {
+			method: "GET",
+		}).then((res) => {
+			console.log("Diary Response Status:", res.status);
+			response.status(res.status);
+			return res.json();
+		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 
 	if (userId !== diaryResponse.userId) {
 		console.log(`userId in accessToken (${userId}) does not match userId in response (${diaryResponse.userId})`);
@@ -55,22 +87,22 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 			userId: userId,
 			...request.body,
 		};
-
 		diaryRequest = `${diaryURL}/?date=${request.query.date}`;
-		diaryResponse = await fetch(diaryRequest, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(diaryRequestBody),
-		})
-			.then((res) => {
+		// try-catch instead of .catch because we need to return from the call
+		try {
+			diaryResponse = await fetch(diaryRequest, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(diaryRequestBody),
+			}).then((res) => {
 				console.log("Diary Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				return response.status(500).send({ message: err.message });
 			});
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
@@ -90,20 +122,20 @@ router.patch("/", util.AuthTokenMiddleware, async (request, response) => {
 		};
 
 		diaryRequest = `${diaryURL}/?date=${request.query.date}`;
-		diaryResponse = await fetch(diaryRequest, {
-			method: "PATCH",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(diaryRequestBody),
-		})
-			.then((res) => {
+		try {
+			diaryResponse = await fetch(diaryRequest, {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(diaryRequestBody),
+			}).then((res) => {
 				console.log("Diary Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				response.status(500).send({ message: err.message });
 			});
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
