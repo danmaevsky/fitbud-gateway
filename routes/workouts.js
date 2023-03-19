@@ -14,36 +14,36 @@ router.get("/", util.AuthTokenMiddleware, async (request, response) => {
 	let userId = jwt.decode(token).userId;
 
 	fitnessRequest = `${fitnessURL}/?userId=${userId}`;
-	fitnessResponse = await fetch(fitnessRequest, {
-		method: "GET",
-	})
-		.then((res) => {
+	try {
+		fitnessResponse = await fetch(fitnessRequest, {
+			method: "GET",
+		}).then((res) => {
 			console.log("Workouts Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).send({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 	response.send(fitnessResponse);
 });
 
 /* Get workout by Id */
 router.get("/:workoutId", util.AuthTokenMiddleware, async (request, response) => {
 	fitnessRequest = `${fitnessURL}/${request.params.workoutId}`;
-	fitnessResponse = await fetch(fitnessRequest, {
-		method: "GET",
-	})
-		.then((res) => {
+	try {
+		fitnessResponse = await fetch(fitnessRequest, {
+			method: "GET",
+		}).then((res) => {
 			console.log("Workouts Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).send({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
@@ -66,20 +66,20 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 		...request.body,
 	};
 
-	fitnessResponse = await fetch(fitnessRequest, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(workoutRequestBody),
-	})
-		.then((res) => {
+	try {
+		fitnessResponse = await fetch(fitnessRequest, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(workoutRequestBody),
+		}).then((res) => {
 			console.log("Workouts Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).send({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 	response.send(fitnessResponse);
 });
 
@@ -95,20 +95,20 @@ router.patch("/:workoutId", util.AuthTokenMiddleware, async (request, response) 
 			...request.body,
 		};
 
-		fitnessResponse = await fetch(fitnessRequest, {
-			method: "PATCH",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(workoutRequestBody),
-		})
-			.then((res) => {
+		try {
+			fitnessResponse = await fetch(fitnessRequest, {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(workoutRequestBody),
+			}).then((res) => {
 				console.log("Workouts Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				response.status(500).send({ message: err.message });
 			});
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
 	} else {
 		console.log("Bad Request");
 		return response.status(400).send({ message: "Bad Request" });
@@ -123,19 +123,19 @@ router.delete("/:workoutId", util.AuthTokenMiddleware, async (request, response)
 		let userId = jwt.decode(token).userId;
 		fitnessRequest = `${fitnessURL}/${request.params.workoutId}`;
 
-		fitnessResponse = await fetch(fitnessRequest, {
-			method: "DELETE",
-			body: JSON.stringify({ userId: userId }),
-		})
-			.then((res) => {
+		try {
+			fitnessResponse = await fetch(fitnessRequest, {
+				method: "DELETE",
+				body: JSON.stringify({ userId: userId }),
+			}).then((res) => {
 				console.log("Workouts Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				response.status(500).send({ message: err.message });
 			});
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
 	} else {
 		console.log("Bad Request");
 		return response.status(400).send({ message: "Bad Request" });
