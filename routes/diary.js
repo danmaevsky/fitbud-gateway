@@ -78,4 +78,37 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 	return response.send(diaryResponse);
 });
 
+/* Patch diary */
+router.patch("/", util.AuthTokenMiddleware, async (request, response) => {
+	if (request.query.date) {
+		let token = request.get("Authorization").split(" ")[1];
+		let userId = jwt.decode(token).userId;
+
+		let diaryRequestBody = {
+			userId: userId,
+			...request.body,
+		};
+
+		diaryRequest = `${diaryURL}/?date=${request.query.date}`;
+		diaryResponse = await fetch(diaryRequest, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(diaryRequestBody),
+		})
+			.then((res) => {
+				console.log("Diary Response Status:", res.status);
+				response.status(res.status);
+				return res.json();
+			})
+			.catch((err) => {
+				console.log("Caught Error in Gateway:", err.message);
+				response.status(500).send({ message: err.message });
+			});
+	} else {
+		return response.status(400).send({ message: "Bad Request" });
+	}
+
+	response.send(diaryResponse);
+});
+
 module.exports = router;
