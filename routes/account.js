@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const util = require("../util");
 const express = require("express");
 const AUTH_URL = process.env.AUTH_URL;
+const FITNESS_URL = process.env.FITNESS_URL;
 const PROFILE_URL = process.env.PROFILE_URL;
 
 const router = express.Router();
@@ -184,6 +185,26 @@ router.put("/changePassword", util.AuthTokenMiddleware, async (request, response
 router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, response) => {
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
+	/* Deleting User's Personal Resources */
+	// call to Recipe API
+	// DELETE fitness/recipes/?userId
+	let recipesRequest = `${FITNESS_URL}/recipes/?userId=${userId}`;
+	let recipesResponse = fetch(recipesRequest, {
+		method: "DELETE",
+	});
+
+	// call to Workout API
+	// DELETE fitness/workouts/?userId
+	let workoutsRequest = `${FITNESS_URL}/workouts/?userId=${userId}`;
+	let workoutsResponse = fetch(workoutsRequest, {
+		method: "DELETE",
+	});
+
+	let resourceResponseStatuses = await Promise.all([recipesResponse.then((res) => res.status), workoutsResponse.then((res) => res.status)]);
+	if (resourceResponseStatuses[0] !== 200 && resourceResponseStatuses[1] !== 200) {
+		return response.status(500).send({ message: "Internal Server Error: Account Deletion Failed!" });
+	}
+
 	authRequest = `${AUTH_URL}/deleteAccount`;
 	authResponse = await fetch(authRequest, {
 		method: "DELETE",
@@ -202,12 +223,6 @@ router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, respon
 	profileResponse = await fetch(profileRequest, {
 		method: "DELETE",
 	});
-
-	// call to Food API
-
-	// call to Recipe API
-
-	// call to Workout API
 
 	response.send(authResponse);
 });
