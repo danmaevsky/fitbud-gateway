@@ -78,6 +78,7 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 	response.send(diaryResponse);
 });
 
+/* Patch diary */
 router.patch("/", util.AuthTokenMiddleware, async (request, response) => {
 	if (request.query.date) {
 		let token = request.get("Authorization").split(" ")[1];
