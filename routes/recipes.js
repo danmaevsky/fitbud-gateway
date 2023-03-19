@@ -15,18 +15,18 @@ let recipesResponse;
 router.get("/:recipeId", util.AuthTokenMiddleware, async (request, response) => {
 	if (request.params.recipeId) {
 		recipesRequest = `${recipesURL}/${request.params.recipeId}`;
-		recipesResponse = await fetch(recipesRequest, {
-			method: "GET",
-		})
-			.then((res) => {
+		try {
+			recipesResponse = await fetch(recipesRequest, {
+				method: "GET",
+			}).then((res) => {
 				console.log("Recipe Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				response.status(500).send({ message: err.message });
 			});
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
@@ -57,18 +57,18 @@ router.get("/", util.AuthTokenMiddleware, async (request, response) => {
 		}
 		*/
 		recipesRequest = `${recipesURL}/?userId=${request.query.userId}`;
-		recipesResponse = await fetch(recipesRequest, {
-			method: "GET",
-		})
-			.then((res) => {
+		try {
+			recipesResponse = await fetch(recipesRequest, {
+				method: "GET",
+			}).then((res) => {
 				console.log("Recipe Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				response.status(500).send({ message: err.message });
 			});
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
@@ -84,20 +84,20 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 		userId: userId,
 		...request.body,
 	};
-	recipesResponse = await fetch(recipesRequest, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(recipesRequestBody),
-	})
-		.then((res) => {
+	try {
+		recipesResponse = await fetch(recipesRequest, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(recipesRequestBody),
+		}).then((res) => {
 			console.log("Recipe Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).send({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 	response.send(recipesResponse);
 });
 
@@ -111,20 +111,20 @@ router.patch("/:recipeId", util.AuthTokenMiddleware, async (request, response) =
 			userId: userId,
 			...request.body,
 		};
-		recipesResponse = await fetch(recipesRequest, {
-			method: "PATCH",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(recipesRequestBody),
-		})
-			.then((res) => {
+		try {
+			recipesResponse = await fetch(recipesRequest, {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(recipesRequestBody),
+			}).then((res) => {
 				console.log("Recipe Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				response.status(500).send({ message: err.message });
 			});
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
@@ -137,19 +137,19 @@ router.delete("/:recipeId", util.AuthTokenMiddleware, async (request, response) 
 		let token = request.get("Authorization").split(" ")[1];
 		let userId = jwt.decode(token).userId;
 		recipesRequest = `${recipesURL}/${request.params.recipeId}`;
-		recipesResponse = await fetch(recipesRequest, {
-			method: "DELETE",
-			body: JSON.stringify({ userId: userId }),
-		})
-			.then((res) => {
+		try {
+			recipesResponse = await fetch(recipesRequest, {
+				method: "DELETE",
+				body: JSON.stringify({ userId: userId }),
+			}).then((res) => {
 				console.log("Recipe Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				response.status(500).send({ message: err.message });
 			});
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
