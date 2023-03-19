@@ -31,7 +31,7 @@ router.get("/:diaryId", util.AuthTokenMiddleware, async (request, response) => {
 		})
 		.catch((err) => {
 			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).send({ message: err.message });
+			return response.status(500).send({ message: err.message });
 		});
 
 	let token = request.get("Authorization").split(" ")[1];
@@ -39,10 +39,10 @@ router.get("/:diaryId", util.AuthTokenMiddleware, async (request, response) => {
 
 	if (userId !== diaryResponse.userId) {
 		console.log(`userId in accessToken (${userId}) does not match userId in response (${diaryResponse.userId})`);
-		response.status(401).send({ message: "Not permitted to view diaries that do not belong to you!" });
+		return response.status(401).send({ message: "Not permitted to view diaries that do not belong to you!" });
 	}
 
-	response.send(diaryResponse);
+	return response.send(diaryResponse);
 });
 
 /* Post Diary */
@@ -69,13 +69,13 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 			})
 			.catch((err) => {
 				console.log("Caught Error in Gateway:", err.message);
-				response.status(500).send({ message: err.message });
+				return response.status(500).send({ message: err.message });
 			});
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
 
-	response.send(diaryResponse);
+	return response.send(diaryResponse);
 });
 
 module.exports = router;
