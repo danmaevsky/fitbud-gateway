@@ -84,6 +84,4 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 
 })
 
-router.patch()
-
 module.exports = router;
