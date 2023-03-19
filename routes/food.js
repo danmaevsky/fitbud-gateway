@@ -16,18 +16,18 @@ let foodResponse;
 router.get("/:foodId", async (request, response) => {
 	if (request.params.foodId) {
 		foodRequest = `${foodURL}/${request.params.foodId}`;
-		foodResponse = await fetch(foodRequest, {
-			method: "GET",
-		})
-			.then((res) => {
+		try {
+			foodResponse = await fetch(foodRequest, {
+				method: "GET",
+			}).then((res) => {
 				console.log("Food Response Status:", res.status);
 				response.status(res.status);
 				return res.json();
-			})
-			.catch((err) => {
-				console.log("Caught Error in Gateway:", err.message);
-				response.status(500).json({ message: err.message });
 			});
+		} catch (err) {
+			console.log("Caught Error in Gateway:", err.message);
+			return response.status(500).send({ message: err.message });
+		}
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
@@ -68,18 +68,19 @@ router.get("/", async (request, response) => {
 		return response.status(400).send({ message: "Bad Request" });
 	}
 
-	foodResponse = await fetch(foodRequest, {
-		method: "GET",
-	})
-		.then((res) => {
+	try {
+		foodResponse = await fetch(foodRequest, {
+			method: "GET",
+		}).then((res) => {
 			console.log("Food Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).json({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
+
 	response.send(foodResponse);
 });
 
@@ -94,20 +95,20 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 		userId: userId,
 		...request.body,
 	};
-	foodResponse = await fetch(foodRequest, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(foodRequestBody),
-	})
-		.then((res) => {
+	try {
+		foodResponse = await fetch(foodRequest, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(foodRequestBody),
+		}).then((res) => {
 			console.log("Food Response Status:", res.status);
 			response.status(res.status);
 			return res.json();
-		})
-		.catch((err) => {
-			console.log("Caught Error in Gateway:", err.message);
-			response.status(500).json({ message: err.message });
 		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 	response.send(foodResponse);
 });
 
