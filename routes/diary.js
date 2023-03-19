@@ -9,6 +9,19 @@ const diaryURL = `${FITNESS_URL}/diary`;
 let diaryRequest;
 let diaryResponse;
 
+/* Get Diary by */
+
+router.get("/:diaryId", util.AuthTokenMiddleware, async (request, response) => {
+
+    if (request.params.diaryId) {
+        
+    }
+    else if(request.query.date) {
+
+    }
+
+})
+
 /* Post Diary */
 router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 
@@ -40,6 +53,8 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
     else {
         return response.status(400).send({ message: "Bad Request" });
     }
+
+    response.send(diaryResponse)
 
 })
 
