@@ -115,33 +115,29 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 
 /* Patch diary */
 router.patch("/:diaryId", util.AuthTokenMiddleware, async (request, response) => {
-	if (request.query.date) {
-		let token = request.get("Authorization").split(" ")[1];
-		let userId = jwt.decode(token).userId;
+	let token = request.get("Authorization").split(" ")[1];
+	let userId = jwt.decode(token).userId;
 
-		let diaryRequestBody = {
-			userId: userId,
-			...request.body,
-		};
+	let diaryRequestBody = {
+		userId: userId,
+		...request.body,
+	};
 
-		diaryRequest = `${diaryURL}/${request.params.diaryId}`;
-		try {
-			diaryResponse = await fetch(diaryRequest, {
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(diaryRequestBody),
-			}).then((res) => {
-				console.log("Diary Response Status:", res.status);
-				response.status(res.status);
-				return res.json();
-			});
-			console.log("Message From Diary:", diaryResponse.message);
-		} catch (err) {
-			console.log("Caught Error in Gateway:", err.message);
-			return response.status(500).send({ message: err.message });
-		}
-	} else {
-		return response.status(400).send({ message: "Bad Request" });
+	diaryRequest = `${diaryURL}/${request.params.diaryId}`;
+	try {
+		diaryResponse = await fetch(diaryRequest, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(diaryRequestBody),
+		}).then((res) => {
+			console.log("Diary Response Status:", res.status);
+			response.status(res.status);
+			return res.json();
+		});
+		console.log("Message From Diary:", diaryResponse.message);
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
 	}
 
 	return response.send(diaryResponse);
