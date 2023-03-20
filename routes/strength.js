@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const FITNESS_URL = process.env.FITNESS_URL;
 
 const router = express.Router();

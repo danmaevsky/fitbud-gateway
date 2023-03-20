@@ -1,4 +1,6 @@
 const util = require("../util");
+const jwt = require("jsonwebtoken");
+
 require("dotenv").config();
 const express = require("express");
 const FITNESS_URL = process.env.FITNESS_URL;
