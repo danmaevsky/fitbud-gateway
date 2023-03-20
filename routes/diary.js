@@ -29,6 +29,7 @@ router.get("/:diaryId", util.AuthTokenMiddleware, async (request, response) => {
 			response.status(res.status);
 			return res.json();
 		});
+		console.log("Message From Diary:", diaryResponse.message);
 	} catch (err) {
 		console.log("Caught Error in Gateway:", err.message);
 		return response.status(500).send({ message: err.message });
@@ -64,6 +65,7 @@ router.get("/", util.AuthTokenMiddleware, async (request, response) => {
 			response.status(res.status);
 			return res.json();
 		});
+		console.log("Message From Diary:", diaryResponse.message);
 	} catch (err) {
 		console.log("Caught Error in Gateway:", err.message);
 		return response.status(500).send({ message: err.message });
@@ -99,6 +101,7 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 				response.status(res.status);
 				return res.json();
 			});
+			console.log("Message From Diary:", diaryResponse.message);
 		} catch (err) {
 			console.log("Caught Error in Gateway:", err.message);
 			return response.status(500).send({ message: err.message });
@@ -111,7 +114,7 @@ router.post("/", util.AuthTokenMiddleware, async (request, response) => {
 });
 
 /* Patch diary */
-router.patch("/", util.AuthTokenMiddleware, async (request, response) => {
+router.patch("/:diaryId", util.AuthTokenMiddleware, async (request, response) => {
 	if (request.query.date) {
 		let token = request.get("Authorization").split(" ")[1];
 		let userId = jwt.decode(token).userId;
@@ -121,7 +124,7 @@ router.patch("/", util.AuthTokenMiddleware, async (request, response) => {
 			...request.body,
 		};
 
-		diaryRequest = `${diaryURL}/?date=${request.query.date}`;
+		diaryRequest = `${diaryURL}/${request.params.diaryId}`;
 		try {
 			diaryResponse = await fetch(diaryRequest, {
 				method: "PATCH",
@@ -132,6 +135,7 @@ router.patch("/", util.AuthTokenMiddleware, async (request, response) => {
 				response.status(res.status);
 				return res.json();
 			});
+			console.log("Message From Diary:", diaryResponse.message);
 		} catch (err) {
 			console.log("Caught Error in Gateway:", err.message);
 			return response.status(500).send({ message: err.message });

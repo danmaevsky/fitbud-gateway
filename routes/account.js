@@ -30,7 +30,7 @@ router.post("/createAccount", async (request, response) => {
 		console.log("Caught Error in Gateway:", err.message);
 		return response.status(500).send({ message: err.message });
 	}
-	console.log("Response from Auth API:", authResponse);
+	!authResponse ? console.log(`Auth response is ${authResponse}`) : null;
 
 	let profileStatus;
 	profileRequest = `${PROFILE_URL}/createProfile`;
@@ -48,7 +48,7 @@ router.post("/createAccount", async (request, response) => {
 		console.log("Caught Error in Gateway:", err.message);
 		return response.status(500).send({ message: err.message });
 	}
-	console.log("Response from Profile API:", profileResponse);
+	!profileResponse ? console.log(`Profile response is ${profileResponse}`) : null;
 
 	console.log("authStatus:", authStatus);
 	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
@@ -122,8 +122,8 @@ router.post("/login", async (request, response) => {
 		console.log("Caught Error in Gateway:", err.message);
 		return response.status(500).send({ message: err.message });
 	}
-	console.log("Response from Auth API:", authResponse);
-	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
+	!authResponse ? console.log(`Auth response is ${authResponse}`) : null;
+	authResponse ? console.log("Message from Auth:", authResponse ? authResponse.message : authResponse) : null;
 
 	response.send(authResponse);
 });
@@ -144,8 +144,8 @@ router.post("/logout", util.AuthTokenMiddleware, async (request, response) => {
 		console.log("Caught Error in Gateway:", err.message);
 		return response.status(500).send({ message: err.message });
 	}
-	console.log("Response from Auth API:", authResponse);
-	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
+	!authResponse ? console.log(`Auth response is ${authResponse}`) : null;
+	authResponse ? console.log("Message from Auth:", authResponse ? authResponse.message : authResponse) : null;
 
 	response.send(authResponse);
 });
@@ -167,8 +167,9 @@ router.post("/newToken", async (request, response) => {
 		console.log("Caught Error in Gateway:", err.message);
 		return response.status(500).send({ message: err.message });
 	}
-	console.log("Response from Auth API:", authResponse);
-	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
+	!authResponse ? console.log(`Auth response is ${authResponse}`) : null;
+	authResponse ? console.log("Message from Auth:", authResponse ? authResponse.message : authResponse) : null;
+
 	response.send(authResponse);
 });
 
@@ -189,8 +190,9 @@ router.put("/changePassword", util.AuthTokenMiddleware, async (request, response
 		console.log("Caught Error in Gateway:", err.message);
 		return response.status(500).send({ message: err.message });
 	}
-	console.log("Response from Auth API:", authResponse);
-	console.log("Message from Auth:", authResponse ? authResponse.message : authResponse);
+	!authResponse ? console.log(`Auth response is ${authResponse}`) : null;
+	authResponse ? console.log("Message from Auth:", authResponse ? authResponse.message : authResponse) : null;
+
 	response.send(authResponse);
 });
 
