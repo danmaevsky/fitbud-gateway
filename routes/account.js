@@ -215,7 +215,16 @@ router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, respon
 		method: "DELETE",
 	});
 
-	let resourceResponseStatuses = await Promise.all([recipesResponse.then((res) => res.status), workoutsResponse.then((res) => res.status)]);
+	let resourceResponseStatuses = await Promise.all([
+		recipesResponse.then((res) => {
+			console.log("Recipes Response Status:", res.status);
+			return res.status;
+		}),
+		workoutsResponse.then((res) => {
+			console.log("Workouts Response Status:", res.status);
+			return res.status;
+		}),
+	]);
 	if (resourceResponseStatuses[0] !== 200 && resourceResponseStatuses[1] !== 200) {
 		return response.status(500).send({ message: "Internal Server Error: Account Deletion Failed!" });
 	}
@@ -237,9 +246,14 @@ router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, respon
 
 	// call to Profile API
 	profileRequest = `${PROFILE_URL}/users/${userId}`;
-	profileResponse = await fetch(profileRequest, {
-		method: "DELETE",
-	});
+	try {
+		profileResponse = await fetch(profileRequest, {
+			method: "DELETE",
+		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
 
 	response.send(authResponse);
 });
