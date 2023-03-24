@@ -9,6 +9,7 @@ const router = express.Router();
 const diaryURL = `${PROFILE_URL}/diary`;
 let diaryRequest;
 let diaryResponse;
+let diaryStatus;
 
 /* Get Diary by ID */
 
@@ -63,6 +64,7 @@ router.get("/", util.AuthTokenMiddleware, async (request, response) => {
 		}).then((res) => {
 			console.log("Diary Response Status:", res.status);
 			response.status(res.status);
+			diaryStatus = res.status;
 			return res.json();
 		});
 		console.log("Message From Diary:", diaryResponse.message);
@@ -71,7 +73,11 @@ router.get("/", util.AuthTokenMiddleware, async (request, response) => {
 		return response.status(500).send({ message: err.message });
 	}
 
-	if (userId !== diaryResponse.userId) {
+	if (diaryStatus !== 200) {
+        return response.status(diaryStatus).send(diaryResponse);
+    }
+
+	if (!userId || userId !== diaryResponse.userId) {
 		console.log(`userId in accessToken (${userId}) does not match userId in response (${diaryResponse.userId})`);
 		return response.status(401).send({ message: "Not permitted to view diaries that do not belong to you!" });
 	}
