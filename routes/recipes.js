@@ -42,36 +42,31 @@ router.get("/:recipeId", util.AuthTokenMiddleware, async (request, response) => 
 
 /* Get Recipe by User ID */
 router.get("/", util.AuthTokenMiddleware, async (request, response) => {
-	if (request.query.userId) {
-		let token = request.get("Authorization").split(" ")[1];
-		let userId = jwt.decode(token).userId;
-		if (userId !== request.query.userId) {
-			console.log(`userId in accessToken (${userId}) does not match userId in query parameters (${request.query.userId})`);
-			return response.status(401).send({ message: "Not permitted to view recipes that do not belong to you!" });
-		}
-		// We will do user authentication to prevent client from making this request unless it is their own account
-		/*
-		let tokenIsAuthenticated = await AuthenticateToken(request, authURL);
-		if (!tokenIsAuthenticated){
-			response.status(403).json({ message: "Failed Authentication: Access is Forbidden."})
-		}
-		*/
-		recipesRequest = `${recipesURL}/?userId=${request.query.userId}`;
-		try {
-			recipesResponse = await fetch(recipesRequest, {
-				method: "GET",
-			}).then((res) => {
-				console.log("Recipe Response Status:", res.status);
-				response.status(res.status);
-				return res.json();
-			});
-		} catch (err) {
-			console.log("Caught Error in Gateway:", err.message);
-			return response.status(500).send({ message: err.message });
-		}
-	} else {
-		return response.status(400).send({ message: "Bad Request" });
+
+	let token = request.get("Authorization").split(" ")[1];
+	let userId = jwt.decode(token).userId;
+
+	// We will do user authentication to prevent client from making this request unless it is their own account
+	/*
+	let tokenIsAuthenticated = await AuthenticateToken(request, authURL);
+	if (!tokenIsAuthenticated){
+		response.status(403).json({ message: "Failed Authentication: Access is Forbidden."})
 	}
+	*/
+	recipesRequest = `${recipesURL}/?userId=${userId}`;
+	try {
+		recipesResponse = await fetch(recipesRequest, {
+			method: "GET",
+		}).then((res) => {
+			console.log("Recipe Response Status:", res.status);
+			response.status(res.status);
+			return res.json();
+		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
+
 	response.send(recipesResponse);
 });
 
