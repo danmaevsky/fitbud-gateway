@@ -33,7 +33,7 @@ router.get("/:exerciseId", async (request, response) => {
 /* Get Cardio by Exercise Name */
 router.get("/", async (request, response) => {
 	if (request.query.search) {
-		fitnessRequest = `${fitnessURL}/?search=${request.query.search}`;
+		fitnessRequest = `${fitnessURL}/?search=${encodeURIComponent(request.query.search)}`;
 		try {
 			fitnessResponse = await fetch(fitnessRequest, {
 				method: "GET",

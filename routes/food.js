@@ -37,7 +37,7 @@ router.get("/:foodId", async (request, response) => {
 /* Get Food by Search, Barcode, or User ID */
 router.get("/", async (request, response) => {
 	if (request.query.search) {
-		foodRequest = `${foodURL}/?search=${request.query.search}`;
+		foodRequest = `${foodURL}/?search=${encodeURIComponent(request.query.search)}`;
 	} else if (request.query.barcode) {
 		// We could authenticate?
 		/*
