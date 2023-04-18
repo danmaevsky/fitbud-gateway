@@ -31,6 +31,7 @@ router.get("/:foodId", async (request, response) => {
 	} else {
 		return response.status(400).send({ message: "Bad Request" });
 	}
+	response.setHeader("Cache-Control", "max-age=86400");
 	response.send(foodResponse);
 });
 
