@@ -3,15 +3,9 @@ const validator = require("express-validator");
 const cors = require("cors");
 const express = require("express");
 const app = express();
+
+// Middleware
 app.use(express.json());
-app.use((err, req, res, next) => {
-	// handling JSON error
-	if (err instanceof SyntaxError && err.status === 400) {
-		console.log("Caught error in Gateway:", err.message);
-		return res.status(400).send({ message: "Atrotious request." });
-	}
-	next();
-});
 app.use(
 	cors({
 		origin: "*",
@@ -23,11 +17,11 @@ app.use((req, res, next) => {
 	if (req.method !== "GET" && req.method !== "DELETE" && req.headers["content-type"] !== "application/json") {
 		let e = new SyntaxError();
 		e.status = 400;
+		console.log();
 		throw e;
 	}
 	next();
 });
-
 app.use((req, res, next) => {
 	console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 	console.log("Got Request!");
@@ -36,6 +30,17 @@ app.use((req, res, next) => {
 	req.get("Authorization") ? console.log("Authorization:", req.get("Authorization")) : null;
 	next();
 });
+
+// Error Handlers
+app.use((err, req, res, next) => {
+	// handling JSON error
+	if (err instanceof SyntaxError && err.status === 400) {
+		console.log("Caught error in Gateway:", err.message);
+		return res.status(400).send({ message: "Atrotious request." });
+	}
+	next();
+});
+
 const GATEWAY_PORT = process.env.GATEWAY_PORT;
 
 // Routes
