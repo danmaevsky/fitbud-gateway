@@ -20,7 +20,7 @@ app.use(
 
 app.use((req, res, next) => {
 	// Make sure that Content-Type header is provided and is application/json for anything that is not a GET or DELETE
-	if ((req.method !== "get" || req.method !== "delete") && req.headers["content-type"] !== "application/json") {
+	if (req.method !== "get" && req.method !== "delete" && req.headers["content-type"] !== "application/json") {
 		let e = new SyntaxError();
 		e.status = 400;
 		throw e;
