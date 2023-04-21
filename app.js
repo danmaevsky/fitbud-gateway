@@ -4,9 +4,18 @@ const cors = require("cors");
 const express = require("express");
 const app = express();
 app.use(express.json());
+app.use((req, res, next) => {
+	// Make sure that Content-Type header is provided and is application/json for anything that is not a GET or DELETE
+	if ((req.method !== "GET" || req.method !== "DELETE") && req.headers["content-type"] !== "application/json") {
+		let e = new SyntaxError();
+		e.status = 400;
+		throw e;
+	}
+	next();
+});
 app.use((err, req, res, next) => {
 	// handling JSON error
-	if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+	if (err instanceof SyntaxError && err.status === 400) {
 		console.log("Caught error in Gateway:", err.message);
 		return res.status(400).send({ message: "Atrotious request." });
 	}
