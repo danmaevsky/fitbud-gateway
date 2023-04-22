@@ -258,4 +258,88 @@ router.delete("/deleteAccount", util.AuthTokenMiddleware, async (request, respon
 	response.send(authResponse);
 });
 
+// POST verifying email address and sending reset email
+
+router.post("/forgotPassword", async (request, response) => {
+
+	let authStatus;
+	let authRequest = `${AUTH_URL}/forgotPassword`;
+
+	try {
+		authResponse = await fetch(authRequest, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(request.body)
+		}).then((res) => {
+			console.log("Auth Response Status:", res.status);
+			response.status(res.status);
+			authStatus = res.status;
+			return res.json();
+		});
+	}
+	catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
+
+    return response.status(authStatus).send(authResponse);
+
+});
+
+// GET verifying reset password link
+
+router.get("/forgotPassword/:userId/:token", async (request, response) => {
+	
+	let authStatus;
+	authRequest = `${AUTH_URL}/forgotPassword/${request.params.userId}/${request.params.token}`;
+
+	try {
+		authResponse = await fetch(authRequest, {
+			method: "GET",
+		}).then((res) => {
+			console.log("Auth Response Status:", res.status);
+			response.status(res.status);
+			authStatus = res.status;
+			return res.json();
+		});
+	}
+	catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
+
+	return response.status(authStatus).send(authResponse);
+
+});
+
+// PUT update the forgotten password
+
+router.put("/forgotPassword/:userId/:token", async (request, response) => {
+
+	let authStatus;
+	authRequest = `${AUTH_URL}/forgotPassword/${request.params.userId}/${request.params.token}`;
+
+	try {
+		authResponse = await fetch(authRequest, {
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(request.body)
+		}).then((res) => {
+			console.log("Auth Response Status:", res.status);
+			response.status(res.status);
+			authStatus = res.status;
+			return res.json();
+		});
+	}
+	catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
+
+    return response.status(authStatus).send(authResponse);
+
+});
+
+
+
 module.exports = router;
