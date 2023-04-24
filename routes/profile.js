@@ -76,7 +76,7 @@ router.get("/profilePicture", util.AuthTokenMiddleware, async (request, response
 			return res.json();
 		});
 
-		if (profileStatus != 201) {
+		if (profileStatus != 200) {
 			return response.status(profileStatus).send(profileResponse);
 		}
 
