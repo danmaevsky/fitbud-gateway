@@ -57,6 +57,7 @@ router.patch("/users", util.AuthTokenMiddleware, async (request, response) => {
 	response.status(profileStatus).send(profileResponse);
 });
 
+/* GET a profile picture */
 router.get("/profilePicture", util.AuthTokenMiddleware, async (request, response) => {
 
 	let blobResponse;
@@ -112,7 +113,6 @@ router.post("/profilePicture", util.AuthTokenMiddleware, async (request, respons
 	profileRequest = `${PROFILE_URL}/profilePicture`;
 	profileRequestBody = {
 		userId: userId,
-		...request.body,
 	};
 
 	try {
@@ -120,6 +120,7 @@ router.post("/profilePicture", util.AuthTokenMiddleware, async (request, respons
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(profileRequestBody),
+			file: request.file
 		}).then((res) => {
 			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
