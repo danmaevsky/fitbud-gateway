@@ -326,7 +326,7 @@ router.put("/forgotPassword/:userId/:token", async (request, response) => {
 			body: JSON.stringify(request.body)
 		}).then((res) => {
 			console.log("Auth Response Status:", res.status);
-			response.status(res.status);
+			response.status(res.status); 
 			authStatus = res.status;
 			return res.json();
 		});
