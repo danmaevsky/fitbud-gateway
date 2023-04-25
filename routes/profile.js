@@ -3,7 +3,8 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const util = require("../util");
 const multer = require("multer")
-const upload = multer()
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage })
 const PROFILE_URL = process.env.PROFILE_URL;
 
 const router = express.Router();
@@ -91,13 +92,13 @@ router.get("/users/profilePicture", util.AuthTokenMiddleware, async (request, re
 
 })
 
-router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.any(), async (request, response) => {
+router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.single("image"), async (request, response) => {
 
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 
 	const formData = new FormData();
-	formData.append("image", request.files[0])
+	formData.append("image", request.file)
 
 	profileRequest = `${PROFILE_URL}/profilePicture/${userId}`;
 
