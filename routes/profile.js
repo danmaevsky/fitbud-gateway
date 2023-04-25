@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const util = require("../util");
 const multer = require("multer")
 const storage = multer.memoryStorage();
+const fs = require('fs-extra');
 const upload = multer({ storage: storage })
 const PROFILE_URL = process.env.PROFILE_URL;
 
@@ -97,20 +98,18 @@ router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.single("im
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 
-
-	// const formData = new FormData();
-	// formData.append("image", request.file)
-	// formData.append("image", request.file, request.file.originalname);
+	const formData = new FormData();
+	form.append("image", fs.createReadStream(request.file.path))
 
 	profileRequest = `${PROFILE_URL}/profilePicture/${userId}`;
 
 	console.log(request.file)
+	console.log(typeof request.file)
 
 	try {
 		profileResponse = await fetch(profileRequest, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ mimetype: request.file.mimetype, buffer: request.file.buffer})
+			body: formData
 		}).then((res) => {
 			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
