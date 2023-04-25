@@ -91,10 +91,14 @@ router.get("/users/profilePicture", util.AuthTokenMiddleware, async (request, re
 
 router.post("/profilePicture", util.AuthTokenMiddleware, async (request, response) => {
 
+	console.log("entered the post")
+
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 
 	profileRequest = `${PROFILE_URL}/profilePicture/${userId}`;
+
+	console.log("now entering the try")
 
 	try {
 		profileResponse = await fetch(profileRequest, {
