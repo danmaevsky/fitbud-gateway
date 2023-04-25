@@ -97,7 +97,7 @@ router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.any(), asy
 	let userId = jwt.decode(token).userId;
 
 	const formData = new FormData();
-	formData.append("image", request.file)
+	formData.append("image", request.files[0])
 
 	profileRequest = `${PROFILE_URL}/profilePicture/${userId}`;
 
