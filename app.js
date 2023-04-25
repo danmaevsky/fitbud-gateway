@@ -14,12 +14,12 @@ app.use(
 
 app.use((req, res, next) => {
 	// Make sure that Content-Type header is provided and is application/json for anything that is not a GET or DELETE
-	if (req.method !== "GET" && req.method !== "DELETE" && (req.headers["content-type"] !== "application/json" && req.headers["content-type"] !== "image/png")) {
-		let e = new SyntaxError();
-		e.status = 400;
-		console.log();
-		throw e;
-	}
+	// if (req.method !== "GET" && req.method !== "DELETE" && (req.headers["content-type"] !== "application/json" && req.headers["content-type"] !== "image/png")) {
+	// 	let e = new SyntaxError();
+	// 	e.status = 400;
+	// 	console.log();
+	// 	throw e;
+	// }
 	next();
 });
 app.use((req, res, next) => {
