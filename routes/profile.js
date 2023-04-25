@@ -89,7 +89,7 @@ router.get("/users/profilePicture", util.AuthTokenMiddleware, async (request, re
 
 })
 
-router.post("/profilePicture", util.AuthTokenMiddleware, async (request, response) => {
+router.post("/users/profilePicture", util.AuthTokenMiddleware, async (request, response) => {
 
 	console.log("entered the post")
 
