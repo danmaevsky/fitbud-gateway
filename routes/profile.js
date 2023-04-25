@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const util = require("../util");
+const multer = require("multer")
+const upload = multer()
 const PROFILE_URL = process.env.PROFILE_URL;
 
 const router = express.Router();
@@ -89,10 +91,13 @@ router.get("/users/profilePicture", util.AuthTokenMiddleware, async (request, re
 
 })
 
-router.post("/users/profilePicture", util.AuthTokenMiddleware, async (request, response) => {
+router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.any(), async (request, response) => {
 
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
+
+	const formData = new FormData();
+	formData.append("image", request.file)
 
 	profileRequest = `${PROFILE_URL}/profilePicture/${userId}`;
 
@@ -101,8 +106,7 @@ router.post("/users/profilePicture", util.AuthTokenMiddleware, async (request, r
 	try {
 		profileResponse = await fetch(profileRequest, {
 			method: "POST",
-			headers: { "Content-Type": "image/png" },
-			body: request.body
+			body: formData
 		}).then((res) => {
 			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
