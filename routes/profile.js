@@ -96,7 +96,7 @@ router.post("/users/profilePicture", util.AuthTokenMiddleware, async (request, r
 
 	profileRequest = `${PROFILE_URL}/profilePicture/${userId}`;
 
-	console.log(request.body)
+	console.log(request)
 
 	try {
 		profileResponse = await fetch(profileRequest, {
