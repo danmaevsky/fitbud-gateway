@@ -97,12 +97,10 @@ router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.single("im
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 
-	console.log(typeof request.file);
 
-
-	const formData = new FormData();
+	// const formData = new FormData();
 	// formData.append("image", request.file)
-	formData.append("image", request.file, request.file.originalname);
+	// formData.append("image", request.file, request.file.originalname);
 
 	profileRequest = `${PROFILE_URL}/profilePicture/${userId}`;
 
@@ -113,7 +111,8 @@ router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.single("im
 	try {
 		profileResponse = await fetch(profileRequest, {
 			method: "POST",
-			body: formData
+			headers: { "Content-Type": "application/json" },
+			body: { mimetype: request.file.mimetype, buffer: request.file.buffer}
 		}).then((res) => {
 			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
