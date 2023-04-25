@@ -60,8 +60,6 @@ router.patch("/users", util.AuthTokenMiddleware, async (request, response) => {
 /* GET a profile picture */
 router.get("/users/profilePicture", util.AuthTokenMiddleware, async (request, response) => {
 
-	let blobResponse;
-	let blobStatus;
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 
@@ -101,10 +99,8 @@ router.post("/profilePicture", util.AuthTokenMiddleware, async (request, respons
 	try {
 		profileResponse = await fetch(profileRequest, {
 			method: "POST",
-			// headers: { "Content-Type": "application/json" },
-			// body: JSON.stringify({ message: "This works" }),
-			headers: { 'Accept': '*/*' },
-			file: request.file
+			headers: { "Content-Type": "image/png" },
+			body: request.body
 		}).then((res) => {
 			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
