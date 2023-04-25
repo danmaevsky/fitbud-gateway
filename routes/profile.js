@@ -102,8 +102,8 @@ router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.single("im
 
 	profileRequest = `${PROFILE_URL}/profilePicture/${userId}`;
 
-	console.log(request)
-
+	console.log(request.file)
+	console.log()
 	console.log(formData)
 
 	try {
