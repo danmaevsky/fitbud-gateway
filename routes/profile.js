@@ -109,7 +109,7 @@ router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.single("im
 	try {
 		profileResponse = await fetch(profileRequest, {
 			method: "POST",
-			body: formData
+			file: request.file
 		}).then((res) => {
 			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
