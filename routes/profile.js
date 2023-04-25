@@ -103,6 +103,8 @@ router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.any(), asy
 
 	console.log(request)
 
+	console.log(formData)
+
 	try {
 		profileResponse = await fetch(profileRequest, {
 			method: "POST",
