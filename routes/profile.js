@@ -58,7 +58,7 @@ router.patch("/users", util.AuthTokenMiddleware, async (request, response) => {
 });
 
 /* GET a profile picture */
-router.get("/profilePicture", util.AuthTokenMiddleware, async (request, response) => {
+router.get("/users/profilePicture", util.AuthTokenMiddleware, async (request, response) => {
 
 	let blobResponse;
 	let blobStatus;
@@ -74,23 +74,9 @@ router.get("/profilePicture", util.AuthTokenMiddleware, async (request, response
 			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
 			profileStatus = res.status;
-			return res.json();
+			return res.json()
 		});
 
-		if (profileStatus != 200) {
-			return response.status(profileStatus).send(profileResponse);
-		}
-
-		blobResponse = await fetch(`${profileResponse.data}`, {
-			method: "GET"
-		}).then((res) => {
-			console.log("Blob Response Status:", res.status);
-			response.status(res.status);
-			blobStatus = res.status;
-			return res.blob();
-		}).then((blob) => {
-			return URL.createObjectURL(blob);
-		})
 
 	} catch (err) {
 		console.log("Caught Error in Gateway:", err.message);
@@ -101,7 +87,7 @@ router.get("/profilePicture", util.AuthTokenMiddleware, async (request, response
 	console.log("Response from Profile API:", profileResponse);
 	console.log("Message from Profile:", profileResponse ? profileResponse.message : profileResponse);
 
-	response.status(profileStatus).send(blobResponse);
+	response.status(profileStatus).send(profileResponse);
 
 })
 
@@ -110,23 +96,21 @@ router.post("/profilePicture", util.AuthTokenMiddleware, async (request, respons
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 
-	profileRequest = `${PROFILE_URL}/profilePicture`;
-	profileRequestBody = {
-		userId: userId,
-	};
+	profileRequest = `${PROFILE_URL}/profilePicture/${userId}`;
 
 	try {
 		profileResponse = await fetch(profileRequest, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(profileRequestBody),
+			// headers: { "Content-Type": "application/json" },
+			// body: JSON.stringify({ message: "This works" }),
+			headers: { 'Accept': '*/*' },
 			file: request.file
 		}).then((res) => {
 			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
 			profileStatus = res.status;
 			return res.json();
-		});
+		})
 	} catch (err) {
 		console.log("Caught Error in Gateway:", err.message);
 		return response.status(500).send({ message: err.message });
