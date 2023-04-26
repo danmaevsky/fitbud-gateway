@@ -174,12 +174,12 @@ router.post("/newToken", async (request, response) => {
 });
 
 /* Put to Change Password */
-router.put("/changePassword", util.AuthTokenMiddleware, async (request, response) => {
+router.put("/changePassword", util.AuthTokenMiddleware,async (request, response) => {
 	authRequest = `${AUTH_URL}/changePassword`;
 	try {
 		authResponse = await fetch(authRequest, {
 			method: "PUT",
-			headers: { "Content-Type": "application/json" },
+			headers: { "Content-Type": "application/json", "Authorization": request.get("Authorization") },
 			body: JSON.stringify(request.body),
 		}).then((res) => {
 			console.log("Auth Response Status:", res.status);
