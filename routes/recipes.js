@@ -35,14 +35,13 @@ router.get("/:recipeId", util.AuthTokenMiddleware, async (request, response) => 
 	let userId = jwt.decode(token).userId;
 	if (userId !== recipesResponse.userId) {
 		console.log(`userId in accessToken (${userId}) does not match userId in response (${recipesResponse.userId})`);
-		response.status(401).send({ message: "Not permitted to view recipes that do not belong to you!" });
+		return response.status(401).send({ message: "Not permitted to view recipes that do not belong to you!" });
 	}
-	response.send(recipesResponse);
+	return response.send(recipesResponse);
 });
 
 /* Get Recipe by User ID */
 router.get("/", util.AuthTokenMiddleware, async (request, response) => {
-
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 
