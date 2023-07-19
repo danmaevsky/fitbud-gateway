@@ -2,10 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const util = require("../util");
-const multer = require("multer")
+const multer = require("multer");
 const storage = multer.memoryStorage();
-const fs = require('fs-extra');
-const upload = multer({ storage: storage })
+const fs = require("fs-extra");
+const upload = multer({ storage: storage });
 const PROFILE_URL = process.env.PROFILE_URL;
 
 const router = express.Router();
@@ -63,7 +63,6 @@ router.patch("/users", util.AuthTokenMiddleware, async (request, response) => {
 
 /* GET a profile picture */
 router.get("/users/profilePicture", util.AuthTokenMiddleware, async (request, response) => {
-
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 
@@ -76,25 +75,20 @@ router.get("/users/profilePicture", util.AuthTokenMiddleware, async (request, re
 			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
 			profileStatus = res.status;
-			return res.json()
+			return res.json();
 		});
-
-
 	} catch (err) {
 		console.log("Caught Error in Gateway:", err.message);
 		return response.status(500).send({ message: err.message });
 	}
 
-
 	console.log("Response from Profile API:", profileResponse);
 	console.log("Message from Profile:", profileResponse ? profileResponse.message : profileResponse);
 
 	response.status(profileStatus).send(profileResponse);
-
-})
+});
 
 router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.single("image"), async (request, response) => {
-
 	let token = request.get("Authorization").split(" ")[1];
 	let userId = jwt.decode(token).userId;
 
@@ -102,27 +96,26 @@ router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.single("im
 
 	try {
 		console.log(request.file.path);
-		formData.append("image", fs.createReadStream(request.file.path))
-	}
-	catch (err) {
-		console.log("goofy ah error ", err.message)
+		formData.append("image", fs.createReadStream(request.file.path));
+	} catch (err) {
+		console.log("goofy ah error ", err.message);
 	}
 
 	profileRequest = `${PROFILE_URL}/profilePicture/${userId}`;
 
-	console.log(request.file)
-	console.log(typeof request.file)
+	console.log(request.file);
+	console.log(typeof request.file);
 
 	try {
 		profileResponse = await fetch(profileRequest, {
 			method: "POST",
-			body: formData
+			body: formData,
 		}).then((res) => {
 			console.log("Profile Response Status:", res.status);
 			response.status(res.status);
 			profileStatus = res.status;
 			return res.json();
-		})
+		});
 	} catch (err) {
 		console.log("Caught Error in Gateway:", err.message);
 		return response.status(500).send({ message: err.message });
@@ -132,7 +125,52 @@ router.post("/users/profilePicture", util.AuthTokenMiddleware, upload.single("im
 	console.log("Message from Profile:", profileResponse ? profileResponse.message : profileResponse);
 
 	response.status(profileStatus).send(profileResponse);
+});
 
-})
+/* GET search history */
+router.get("/users/history", util.AuthTokenMiddleware, async (request, response) => {
+	let token = request.get("Authorization").split(" ")[1];
+	let userId = jwt.decode(token).userId;
+	profileRequest = `${PROFILE_URL}/history/${userId}`;
+	try {
+		profileResponse = await fetch(profileRequest, {
+			method: "GET",
+		}).then((res) => {
+			console.log("Profile Response Status:", res.status);
+			response.status(res.status);
+			profileStatus = res.status;
+			return res.json();
+		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
+	console.log("Response from Profile API:", profileResponse);
+	console.log("Message from Profile:", profileResponse ? profileResponse.message : profileResponse);
+	response.status(profileStatus).send(profileResponse);
+});
+
+/* DELETE search history */
+router.delete("/users/history", util.AuthTokenMiddleware, async (request, response) => {
+	let token = request.get("Authorization").split(" ")[1];
+	let userId = jwt.decode(token).userId;
+	profileRequest = `${PROFILE_URL}/history/${userId}`;
+	try {
+		profileResponse = await fetch(profileRequest, {
+			method: "DELETE",
+		}).then((res) => {
+			console.log("Profile Response Status:", res.status);
+			response.status(res.status);
+			profileStatus = res.status;
+			return res.json();
+		});
+	} catch (err) {
+		console.log("Caught Error in Gateway:", err.message);
+		return response.status(500).send({ message: err.message });
+	}
+	console.log("Response from Profile API:", profileResponse);
+	console.log("Message from Profile:", profileResponse ? profileResponse.message : profileResponse);
+	response.status(profileStatus).send(profileResponse);
+});
 
 module.exports = router;
